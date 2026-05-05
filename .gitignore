@@ -1,0 +1,20 @@
+.codex
+.direnv/
+.env
+.env.*
+result
+result-*
+
+# OpenTofu / Terraform local state
+.terraform/
+.tofu/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
