@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Marx Compute Club</title>
+  <style>
+    :root {
+      --paper: #f5f1e7;
+      --ink: #0b0b0a;
+      --muted: #666155;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    main {
+      width: min(920px, calc(100vw - 40px));
+      display: grid;
+      gap: 32px;
+      padding: 48px 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(56px, 13vw, 150px);
+      line-height: 0.86;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    p {
+      max-width: 44ch;
+      margin: 0;
+      color: var(--muted);
+      font: 700 clamp(18px, 2.8vw, 30px)/1.25 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Marx Compute Club</h1>
+    <p>Theory, simulation, and infrastructure after AI.</p>
+  </main>
+</body>
+</html>
