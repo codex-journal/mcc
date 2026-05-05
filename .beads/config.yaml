@@ -52,3 +52,17 @@
 # - linear.api-key
 # - github.org
 # - github.repo
+
+dolt.host: 100.104.54.14
+
+dolt.port: 3306
+
+dolt.user: "beads"
+
+dolt.database: "mcc"
+
+dolt.auto-push: false
+
+backup.enabled: false
+
+export.auto: false

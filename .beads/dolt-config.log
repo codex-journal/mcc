@@ -1,0 +1,4 @@
+2026-05-05T04:47:37Z actor=unknown key=host value=100.104.54.14 beads_dir=/home/hermes/workspace/mcc/.beads
+2026-05-05T04:47:37Z actor=unknown key=port value=3306 beads_dir=/home/hermes/workspace/mcc/.beads
+2026-05-05T04:47:37Z actor=unknown key=user value=beads beads_dir=/home/hermes/workspace/mcc/.beads
+2026-05-05T04:47:37Z actor=unknown key=database value=mcc beads_dir=/home/hermes/workspace/mcc/.beads
