@@ -82,6 +82,10 @@ resource "cloudflare_d1_database" "mcc_signups" {
   account_id            = var.cloudflare_account_id
   name                  = "mcc-signups"
   primary_location_hint = "enam"
+
+  lifecycle {
+    ignore_changes = [read_replication]
+  }
 }
 
 resource "cloudflare_turnstile_widget" "signup" {
