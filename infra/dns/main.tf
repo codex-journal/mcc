@@ -93,9 +93,9 @@ resource "cloudflare_turnstile_widget" "signup" {
   account_id = var.cloudflare_account_id
   name       = "MCC signup"
   domains = [
+    "${var.cloudflare_pages_project_name}.pages.dev",
     local.domain,
     "www.${local.domain}",
-    "${var.cloudflare_pages_project_name}.pages.dev",
   ]
   mode   = "managed"
   region = "world"
@@ -158,6 +158,10 @@ resource "cloudflare_pages_project" "mcc_site" {
       }
     }
   }
+
+  lifecycle {
+    ignore_changes = [deployment_configs]
+  }
 }
 
 resource "cloudflare_pages_domain" "www" {
@@ -176,6 +180,44 @@ resource "cloudflare_dns_record" "www_site" {
   ttl      = 1
   proxied  = true
   comment  = "Managed by OpenTofu: MCC Cloudflare Pages"
+}
+
+resource "cloudflare_dns_record" "apex_redirect_originless" {
+  provider = cloudflare.zone
+  zone_id  = var.cloudflare_zone_id
+  name     = local.domain
+  type     = "A"
+  content  = "192.0.2.1"
+  ttl      = 1
+  proxied  = true
+  comment  = "Managed by OpenTofu: originless apex redirect to www"
+}
+
+resource "cloudflare_ruleset" "apex_to_www_redirect" {
+  provider = cloudflare.zone
+  zone_id  = var.cloudflare_zone_id
+  name     = "MCC apex to www redirect"
+  kind     = "zone"
+  phase    = "http_request_dynamic_redirect"
+
+  rules = [
+    {
+      action      = "redirect"
+      expression  = "(http.host eq \"${local.domain}\")"
+      description = "Redirect apex requests to www while preserving path and query."
+      enabled     = true
+
+      action_parameters = {
+        from_value = {
+          status_code           = 301
+          preserve_query_string = true
+          target_url = {
+            expression = "concat(\"https://www.${local.domain}\", http.request.uri.path)"
+          }
+        }
+      }
+    }
+  ]
 }
 
 resource "cloudflare_dns_record" "migadu_mx_primary" {
@@ -290,6 +332,17 @@ output "www_target" {
     type    = cloudflare_dns_record.www_site.type
     content = cloudflare_dns_record.www_site.content
     proxied = cloudflare_dns_record.www_site.proxied
+  }
+}
+
+output "apex_redirect" {
+  value = {
+    dns_name    = cloudflare_dns_record.apex_redirect_originless.name
+    dns_type    = cloudflare_dns_record.apex_redirect_originless.type
+    dns_content = cloudflare_dns_record.apex_redirect_originless.content
+    proxied     = cloudflare_dns_record.apex_redirect_originless.proxied
+    target      = "https://www.${local.domain}"
+    status_code = 301
   }
 }
 
