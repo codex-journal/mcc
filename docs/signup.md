@@ -58,6 +58,13 @@ scripts/resend-create-segment
 
 The output `id` is the value for `RESEND_SEGMENT_ID`.
 
+Current launch segment:
+
+```text
+MCC announcements
+aa859afd-e0a1-401a-b8f7-f97fa63d4373
+```
+
 Set these as Cloudflare Pages secrets once Resend is configured:
 
 ```text
@@ -130,3 +137,19 @@ sync_error
 
 Do not treat Resend as canonical. Resend is the delivery layer; D1 is the owned
 list.
+
+## Production Verification
+
+The live launch path was verified with a browser signup after Turnstile,
+Cloudflare Pages secrets, and Resend sync were enabled:
+
+```text
+email: personal Gmail plus-address test
+resend_contact_id: populated
+resend_synced_at: 2026-05-06T03:14:37.778Z
+sync_error: null
+```
+
+An earlier test row retains a pre-fix Resend validation error from when the
+worker sent undeclared contact properties. It is useful as an audit trail, not
+as the current expected behavior.
