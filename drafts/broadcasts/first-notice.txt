@@ -1,0 +1,6 @@
+Marx Compute Club smoke test.
+
+This draft exists to verify that the Resend broadcast helper can create a draft
+for the MCC announcements segment using material@marxcompute.club.
+
+Do not send this broadcast.
