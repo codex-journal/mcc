@@ -41,13 +41,24 @@ tofu apply
 The Cloudflare token should be scoped to:
 
 ```text
-Account / Cloudflare Pages / Edit
-Account / D1 / Edit
+Account / Pages / Write
+Account / D1 / Write
 Zone / Zone / Read
-Zone / DNS / Edit
+Zone / DNS / Write
 ```
 
-Limit the zone permissions to `marxcompute.club`.
+Limit the zone permissions to `marxcompute.club`, and limit the account
+permissions to the Cloudflare account whose ID is in
+`TF_VAR_cloudflare_account_id`.
+
+If D1 creation returns `401 Unauthorized`, the token is usually still only
+zone-scoped. The D1 API is account-scoped:
+
+```text
+/client/v4/accounts/:account_id/d1/database
+```
+
+So the token must include account permissions, not only DNS/zone permissions.
 
 ## Deploy
 
