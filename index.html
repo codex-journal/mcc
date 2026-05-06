@@ -120,11 +120,21 @@
 
     .turnstile-shell {
       grid-column: 1 / -1;
-      min-height: 65px;
+      height: 0;
+      min-height: 0;
+      overflow: hidden;
+      opacity: 0;
     }
 
     .turnstile-shell[hidden] {
       display: none;
+    }
+
+    .turnstile-shell[data-interactive="true"] {
+      height: auto;
+      min-height: 65px;
+      overflow: visible;
+      opacity: 1;
     }
 
     @media (max-width: 600px) {
@@ -224,14 +234,25 @@
       turnstileWidgetId = window.turnstile.render("#turnstile-widget", {
         sitekey: config.turnstileSiteKey,
         theme: "light",
+        appearance: "interaction-only",
+        size: "flexible",
+        "feedback-enabled": false,
         callback: (token) => {
           turnstileToken.value = token;
+          turnstileShell.removeAttribute("data-interactive");
+        },
+        "before-interactive-callback": () => {
+          turnstileShell.dataset.interactive = "true";
+        },
+        "after-interactive-callback": () => {
+          turnstileShell.removeAttribute("data-interactive");
         },
         "expired-callback": () => {
           turnstileToken.value = "";
         },
         "error-callback": () => {
           turnstileToken.value = "";
+          turnstileShell.dataset.interactive = "true";
         }
       });
     }
