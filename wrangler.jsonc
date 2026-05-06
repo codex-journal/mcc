@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "marxcompute-club",
+  "compatibility_date": "2026-05-05",
+  "pages_build_output_dir": "dist",
+  "d1_databases": [
+    {
+      "binding": "MCC_DB",
+      "database_name": "mcc-signups",
+      "database_id": "13593e66-c1da-42f7-9fd1-80e8d8d2c726"
+    }
+  ],
+  "vars": {
+    "SIGNUP_ENV": "production"
+  }
+}

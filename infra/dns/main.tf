@@ -9,7 +9,31 @@ terraform {
   }
 }
 
+provider "cloudflare" {
+  api_token = var.cloudflare_account_api_token != "" ? var.cloudflare_account_api_token : null
+  alias     = "account"
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_zone_api_token != "" ? var.cloudflare_zone_api_token : null
+  alias     = "zone"
+}
+
 provider "cloudflare" {}
+
+variable "cloudflare_account_api_token" {
+  description = "Optional account-scoped Cloudflare API token for Pages and D1. Falls back to provider env if empty."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "cloudflare_zone_api_token" {
+  description = "Optional zone-scoped Cloudflare API token for DNS. Falls back to provider env if empty."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
 
 variable "cloudflare_zone_id" {
   description = "Cloudflare zone ID for marxcompute.club."
@@ -37,12 +61,14 @@ moved {
 }
 
 resource "cloudflare_d1_database" "mcc_signups" {
+  provider              = cloudflare.account
   account_id            = var.cloudflare_account_id
   name                  = "mcc-signups"
   primary_location_hint = "enam"
 }
 
 resource "cloudflare_pages_project" "mcc_site" {
+  provider          = cloudflare.account
   account_id        = var.cloudflare_account_id
   name              = var.cloudflare_pages_project_name
   production_branch = "main"
@@ -85,19 +111,21 @@ resource "cloudflare_pages_project" "mcc_site" {
 }
 
 resource "cloudflare_pages_domain" "www" {
+  provider     = cloudflare.account
   account_id   = var.cloudflare_account_id
   project_name = cloudflare_pages_project.mcc_site.name
   name         = "www.${local.domain}"
 }
 
 resource "cloudflare_dns_record" "www_site" {
-  zone_id = var.cloudflare_zone_id
-  name    = "www.${local.domain}"
-  type    = "CNAME"
-  content = "${cloudflare_pages_project.mcc_site.name}.pages.dev"
-  ttl     = 1
-  proxied = true
-  comment = "Managed by OpenTofu: MCC Cloudflare Pages"
+  provider = cloudflare.zone
+  zone_id  = var.cloudflare_zone_id
+  name     = "www.${local.domain}"
+  type     = "CNAME"
+  content  = "${cloudflare_pages_project.mcc_site.name}.pages.dev"
+  ttl      = 1
+  proxied  = true
+  comment  = "Managed by OpenTofu: MCC Cloudflare Pages"
 }
 
 output "www_target" {

@@ -33,6 +33,8 @@ Functions from the repo-level `functions` directory:
 
 ```bash
 scripts/build-site
+export CLOUDFLARE_ACCOUNT_ID="$TF_VAR_cloudflare_account_id"
+wrangler d1 migrations apply mcc-signups --remote --config wrangler.jsonc
 wrangler pages deploy dist --project-name marxcompute-club --branch main
 ```
 
