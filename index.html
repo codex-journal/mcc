@@ -10,6 +10,8 @@
       --paper: #f5f1e7;
       --ink: #0b0b0a;
       --muted: #666155;
+      --rule: #7a7468;
+      --red: #b11218;
     }
 
     * {
@@ -48,12 +50,133 @@
       font: 700 clamp(18px, 2.8vw, 30px)/1.25 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
       text-transform: uppercase;
     }
+
+    form {
+      width: min(620px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      padding-top: 18px;
+      border-top: 1px solid var(--rule);
+    }
+
+    label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    input,
+    button {
+      min-height: 48px;
+      border: 1px solid var(--ink);
+      border-radius: 0;
+      background: transparent;
+      color: var(--ink);
+      font: 700 16px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    input {
+      min-width: 0;
+      padding: 0 14px;
+    }
+
+    input:focus,
+    button:focus {
+      outline: 2px solid var(--red);
+      outline-offset: 2px;
+    }
+
+    button {
+      cursor: pointer;
+      padding: 0 18px;
+    }
+
+    button:disabled {
+      cursor: wait;
+      color: var(--muted);
+      border-color: var(--muted);
+    }
+
+    .hp {
+      display: none;
+    }
+
+    .form-status {
+      grid-column: 1 / -1;
+      min-height: 1.25em;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .form-status[data-state="error"] {
+      color: var(--red);
+    }
+
+    @media (max-width: 600px) {
+      main {
+        width: min(100% - 28px, 920px);
+        padding: 28px 0;
+      }
+
+      form {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
   <main>
     <h1>Marx Compute Club</h1>
-    <p>Theory, simulation, and infrastructure after AI.</p>
+    <p>Theory, simulation, and infrastructure after AI. Forming in NYC.</p>
+    <form id="signup-form" action="/api/signup" method="post">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" placeholder="email" autocomplete="email" required>
+      <input class="hp" name="company" type="text" tabindex="-1" autocomplete="off">
+      <input name="source" type="hidden" value="homepage">
+      <button type="submit">Join</button>
+      <p class="form-status" id="signup-status" role="status" aria-live="polite"></p>
+    </form>
   </main>
+  <script>
+    const form = document.querySelector("#signup-form");
+    const status = document.querySelector("#signup-status");
+    const button = form.querySelector("button");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      status.textContent = "";
+      status.removeAttribute("data-state");
+      button.disabled = true;
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { "Accept": "application/json" }
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || "Signup failed");
+        }
+        form.reset();
+        status.textContent = payload.message || "You are on the list.";
+      } catch (error) {
+        status.dataset.state = "error";
+        status.textContent = error.message || "Signup failed.";
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>

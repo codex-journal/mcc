@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mcc-local",
+  "compatibility_date": "2026-05-05",
+  "d1_databases": [
+    {
+      "binding": "MCC_DB",
+      "database_name": "mcc-signups",
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "vars": {
+    "SIGNUP_ENV": "local"
+  }
+}

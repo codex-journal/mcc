@@ -16,14 +16,16 @@
           pkgs.git
           pkgs.gh
           pkgs.jq
+          pkgs.nodejs_22
           pkgs.opentofu
+          pkgs.wrangler
         ];
 
         shellHook = ''
           echo "MCC shell"
           echo "DNS: cd infra/dns && tofu init && tofu plan"
+          echo "Signup dev: wrangler pages dev . --config wrangler.local.jsonc"
         '';
       };
     };
 }
-
