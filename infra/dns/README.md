@@ -13,10 +13,23 @@ The apex `marxcompute.club` is intentionally left unmanaged here so it can later
 
 ## Apply
 
-Provide secrets out of band:
+Provide secrets out of band.
+
+If Cloudflare lets you create one token with both account and zone policies, you
+can keep using `CLOUDFLARE_API_TOKEN`:
 
 ```bash
 export CLOUDFLARE_API_TOKEN="$(sops -d --extract '["cloudflare-marxcompute-token"]' /path/to/private/secrets.yaml)"
+export TF_VAR_cloudflare_account_id="..."
+export TF_VAR_cloudflare_zone_id="..."
+```
+
+If Cloudflare will not let one token include both account and zone access, use
+two tokens instead:
+
+```bash
+export TF_VAR_cloudflare_account_api_token="$(sops -d --extract '["cloudflare-mcc-account-token"]' /path/to/private/secrets.yaml)"
+export TF_VAR_cloudflare_zone_api_token="$(sops -d --extract '["cloudflare-mcc-zone-token"]' /path/to/private/secrets.yaml)"
 export TF_VAR_cloudflare_account_id="..."
 export TF_VAR_cloudflare_zone_id="..."
 ```
@@ -38,18 +51,22 @@ tofu plan
 tofu apply
 ```
 
-The Cloudflare token should be scoped to:
+The account token should be scoped to:
 
 ```text
 Account / Pages / Write
 Account / D1 / Write
+```
+
+The zone token should be scoped to:
+
+```text
 Zone / Zone / Read
 Zone / DNS / Write
 ```
 
-Limit the zone permissions to `marxcompute.club`, and limit the account
-permissions to the Cloudflare account whose ID is in
-`TF_VAR_cloudflare_account_id`.
+Limit the zone token to `marxcompute.club`, and limit the account token to the
+Cloudflare account whose ID is in `TF_VAR_cloudflare_account_id`.
 
 If D1 creation returns `401 Unauthorized`, the token is usually still only
 zone-scoped. The D1 API is account-scoped:
@@ -63,12 +80,13 @@ So the token must include account permissions, not only DNS/zone permissions.
 ## Deploy
 
 After `tofu apply`, run the database migration and deploy the static site plus
-Pages Function:
+Pages Function from the repo root:
 
 ```bash
-nix develop
+cd ../..
 scripts/build-site
-wrangler d1 migrations apply mcc-signups --remote
+export CLOUDFLARE_ACCOUNT_ID="$TF_VAR_cloudflare_account_id"
+wrangler d1 migrations apply mcc-signups --remote --config wrangler.jsonc
 wrangler pages deploy dist --project-name marxcompute-club --branch main
 ```
 

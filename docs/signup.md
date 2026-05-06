@@ -31,6 +31,18 @@ Open `http://127.0.0.1:8788` and submit the form to test it in-browser.
 wrangler d1 execute mcc-signups --local --config wrangler.local.jsonc --command "SELECT email, status, source, resend_synced_at, sync_error FROM subscribers ORDER BY updated_at DESC LIMIT 10"
 ```
 
+## Remote Migration
+
+Production D1 is configured in `wrangler.jsonc`:
+
+```bash
+export CLOUDFLARE_ACCOUNT_ID="$TF_VAR_cloudflare_account_id"
+wrangler d1 migrations apply mcc-signups --remote --config wrangler.jsonc
+```
+
+Passing `CLOUDFLARE_ACCOUNT_ID` avoids Wrangler calling `/memberships` to infer
+the account, which fails for narrowly scoped Cloudflare tokens.
+
 ## Resend Sync
 
 Set these as Cloudflare environment variables/secrets once Resend is configured:
