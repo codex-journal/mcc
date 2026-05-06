@@ -13,9 +13,9 @@ Mail DNS:                 Migadu MX/SPF/DKIM/DMARC
 ```
 
 The apex `marxcompute.club` uses an originless proxied `A` record
-(`192.0.2.1`) plus a Cloudflare Single Redirect. This keeps typed apex URLs
-working now while leaving a clean future migration path: remove the redirect
-rule and replace the dummy apex `A` record with the VPS address.
+(`192.0.2.1`) plus a Cloudflare forwarding Page Rule. This keeps typed apex URLs
+working now while leaving a clean future migration path: remove the Page Rule
+and replace the dummy apex `A` record with the VPS address.
 
 ## Apply
 
@@ -70,12 +70,8 @@ The zone token should be scoped to:
 ```text
 Zone / Zone / Read
 Zone / DNS / Write           (shown as Edit in some Cloudflare UI)
-Zone / Single Redirect / Write
+Zone / Page Rules / Write    (shown as Edit in some Cloudflare UI)
 ```
-
-Cloudflare may show `Single Redirect / Edit` in the dashboard and
-`Dynamic URL Redirects Write` in API docs for the same ruleset-backed redirect
-path.
 
 Limit the zone token to `marxcompute.club`, and limit the account token to the
 Cloudflare account whose ID is in `TF_VAR_cloudflare_account_id`.

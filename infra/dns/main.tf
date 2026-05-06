@@ -193,31 +193,19 @@ resource "cloudflare_dns_record" "apex_redirect_originless" {
   comment  = "Managed by OpenTofu: originless apex redirect to www"
 }
 
-resource "cloudflare_ruleset" "apex_to_www_redirect" {
+resource "cloudflare_page_rule" "apex_to_www_redirect" {
   provider = cloudflare.zone
   zone_id  = var.cloudflare_zone_id
-  name     = "MCC apex to www redirect"
-  kind     = "zone"
-  phase    = "http_request_dynamic_redirect"
+  target   = "${local.domain}/*"
+  priority = 1
+  status   = "active"
 
-  rules = [
-    {
-      action      = "redirect"
-      expression  = "(http.host eq \"${local.domain}\")"
-      description = "Redirect apex requests to www while preserving path and query."
-      enabled     = true
-
-      action_parameters = {
-        from_value = {
-          status_code           = 301
-          preserve_query_string = true
-          target_url = {
-            expression = "concat(\"https://www.${local.domain}\", http.request.uri.path)"
-          }
-        }
-      }
+  actions = {
+    forwarding_url = {
+      status_code = 301
+      url         = "https://www.${local.domain}/$1"
     }
-  ]
+  }
 }
 
 resource "cloudflare_dns_record" "migadu_mx_primary" {
