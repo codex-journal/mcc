@@ -138,17 +138,24 @@ async function syncResend(env, email, metadata) {
   }
 
   try {
+    const contactPayload = {
+      email,
+      unsubscribed: false,
+      properties: {
+        mcc_source: metadata.source,
+        mcc_referrer: metadata.path || "",
+        mcc_user_agent: metadata.userAgent || ""
+      }
+    };
+
+    if (env.RESEND_SEGMENT_ID) {
+      contactPayload.segments = [{ id: env.RESEND_SEGMENT_ID }];
+    }
+
     const createResponse = await fetch("https://api.resend.com/contacts", {
       method: "POST",
       headers: resendHeaders(env),
-      body: JSON.stringify({
-        email,
-        properties: {
-          mcc_source: metadata.source,
-          mcc_referrer: metadata.path || "",
-          mcc_user_agent: metadata.userAgent || ""
-        }
-      })
+      body: JSON.stringify(contactPayload)
     });
 
     let contactId = null;
@@ -159,7 +166,7 @@ async function syncResend(env, email, metadata) {
       return { status: "failed", error: await responseError(createResponse) };
     }
 
-    if (env.RESEND_SEGMENT_ID) {
+    if (env.RESEND_SEGMENT_ID && createResponse.status === 409) {
       const segmentResponse = await fetch(
         `https://api.resend.com/contacts/${encodeURIComponent(email)}/segments/${env.RESEND_SEGMENT_ID}`,
         {

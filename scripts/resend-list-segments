@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${RESEND_API_KEY:?Set RESEND_API_KEY to a Resend API key.}"
+
+curl -fsS \
+  -H "Authorization: Bearer $RESEND_API_KEY" \
+  -H "Content-Type: application/json" \
+  "https://api.resend.com/segments" |
+  jq '{data: [.data[]? | {id, name, created_at}], has_more}'

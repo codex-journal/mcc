@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${RESEND_API_KEY:?Set RESEND_API_KEY to a Resend API key with full access.}"
+
+name="${RESEND_SEGMENT_NAME:-MCC announcements}"
+
+existing="$(
+  curl -fsS \
+    -H "Authorization: Bearer $RESEND_API_KEY" \
+    -H "Content-Type: application/json" \
+    "https://api.resend.com/segments" |
+    jq -r --arg name "$name" '.data[]? | select(.name == $name) | .id' |
+    head -n 1
+)"
+
+if [ -n "$existing" ]; then
+  jq -n --arg id "$existing" --arg name "$name" \
+    '{object:"segment", id:$id, name:$name, existing:true}'
+  exit 0
+fi
+
+jq -n --arg name "$name" '{name:$name}' |
+  curl -fsS \
+    -H "Authorization: Bearer $RESEND_API_KEY" \
+    -H "Content-Type: application/json" \
+    -X POST \
+    -d @- \
+    "https://api.resend.com/segments"
