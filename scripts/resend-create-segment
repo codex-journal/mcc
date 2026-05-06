@@ -4,12 +4,38 @@ set -euo pipefail
 : "${RESEND_API_KEY:?Set RESEND_API_KEY to a Resend API key with full access.}"
 
 name="${RESEND_SEGMENT_NAME:-MCC announcements}"
+api_url="https://api.resend.com/segments"
 
-existing="$(
-  curl -fsS \
+resend_curl() {
+  status_file="$(mktemp)"
+  body_file="$(mktemp)"
+  trap 'rm -f "$status_file" "$body_file"' RETURN
+
+  curl -sS \
+    -o "$body_file" \
+    -w "%{http_code}" \
     -H "Authorization: Bearer $RESEND_API_KEY" \
     -H "Content-Type: application/json" \
-    "https://api.resend.com/segments" |
+    "$@" >"$status_file"
+
+  status="$(cat "$status_file")"
+  if [ "$status" -ge 200 ] && [ "$status" -lt 300 ]; then
+    cat "$body_file"
+    return 0
+  fi
+
+  if [ "$status" = "401" ]; then
+    printf '%s\n' "Resend rejected RESEND_API_KEY. Create a full_access API key and export the token that starts with re_." >&2
+  else
+    printf 'Resend API returned HTTP %s:\n' "$status" >&2
+    cat "$body_file" >&2
+    printf '\n' >&2
+  fi
+  return 1
+}
+
+existing="$(
+  resend_curl "$api_url" |
     jq -r --arg name "$name" '.data[]? | select(.name == $name) | .id' |
     head -n 1
 )"
@@ -21,9 +47,7 @@ if [ -n "$existing" ]; then
 fi
 
 jq -n --arg name "$name" '{name:$name}' |
-  curl -fsS \
-    -H "Authorization: Bearer $RESEND_API_KEY" \
-    -H "Content-Type: application/json" \
+  resend_curl \
     -X POST \
     -d @- \
-    "https://api.resend.com/segments"
+    "$api_url"
