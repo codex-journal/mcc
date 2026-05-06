@@ -51,6 +51,23 @@ variable "cloudflare_pages_project_name" {
   default     = "marxcompute-club"
 }
 
+variable "migadu_dns_verification" {
+  description = "Optional Migadu root TXT verification value from the Migadu domain records API."
+  type        = string
+  default     = ""
+}
+
+variable "migadu_dmarc_policy" {
+  description = "DMARC policy for Migadu mail. Start at quarantine, then tighten to reject after testing."
+  type        = string
+  default     = "quarantine"
+
+  validation {
+    condition     = contains(["none", "quarantine", "reject"], var.migadu_dmarc_policy)
+    error_message = "migadu_dmarc_policy must be one of none, quarantine, or reject."
+  }
+}
+
 locals {
   domain = "marxcompute.club"
 }
@@ -65,6 +82,19 @@ resource "cloudflare_d1_database" "mcc_signups" {
   account_id            = var.cloudflare_account_id
   name                  = "mcc-signups"
   primary_location_hint = "enam"
+}
+
+resource "cloudflare_turnstile_widget" "signup" {
+  provider   = cloudflare.account
+  account_id = var.cloudflare_account_id
+  name       = "MCC signup"
+  domains = [
+    local.domain,
+    "www.${local.domain}",
+    "${var.cloudflare_pages_project_name}.pages.dev",
+  ]
+  mode   = "managed"
+  region = "world"
 }
 
 resource "cloudflare_pages_project" "mcc_site" {
@@ -88,6 +118,14 @@ resource "cloudflare_pages_project" "mcc_site" {
           type  = "plain_text"
           value = "production"
         }
+        TURNSTILE_SITE_KEY = {
+          type  = "plain_text"
+          value = cloudflare_turnstile_widget.signup.sitekey
+        }
+        TURNSTILE_SECRET_KEY = {
+          type  = "secret_text"
+          value = cloudflare_turnstile_widget.signup.secret
+        }
       }
     }
 
@@ -104,6 +142,14 @@ resource "cloudflare_pages_project" "mcc_site" {
         SIGNUP_ENV = {
           type  = "plain_text"
           value = "preview"
+        }
+        TURNSTILE_SITE_KEY = {
+          type  = "plain_text"
+          value = cloudflare_turnstile_widget.signup.sitekey
+        }
+        TURNSTILE_SECRET_KEY = {
+          type  = "secret_text"
+          value = cloudflare_turnstile_widget.signup.secret
         }
       }
     }
@@ -128,6 +174,78 @@ resource "cloudflare_dns_record" "www_site" {
   comment  = "Managed by OpenTofu: MCC Cloudflare Pages"
 }
 
+resource "cloudflare_dns_record" "migadu_mx_primary" {
+  provider = cloudflare.zone
+  zone_id  = var.cloudflare_zone_id
+  name     = local.domain
+  type     = "MX"
+  content  = "aspmx1.migadu.com"
+  priority = 10
+  ttl      = 1
+  proxied  = false
+  comment  = "Managed by OpenTofu: Migadu primary MX"
+}
+
+resource "cloudflare_dns_record" "migadu_mx_secondary" {
+  provider = cloudflare.zone
+  zone_id  = var.cloudflare_zone_id
+  name     = local.domain
+  type     = "MX"
+  content  = "aspmx2.migadu.com"
+  priority = 20
+  ttl      = 1
+  proxied  = false
+  comment  = "Managed by OpenTofu: Migadu secondary MX"
+}
+
+resource "cloudflare_dns_record" "migadu_spf" {
+  provider = cloudflare.zone
+  zone_id  = var.cloudflare_zone_id
+  name     = local.domain
+  type     = "TXT"
+  content  = "v=spf1 include:spf.migadu.com -all"
+  ttl      = 1
+  proxied  = false
+  comment  = "Managed by OpenTofu: Migadu SPF"
+}
+
+resource "cloudflare_dns_record" "migadu_dkim" {
+  provider = cloudflare.zone
+  for_each = toset(["key1", "key2", "key3"])
+
+  zone_id = var.cloudflare_zone_id
+  name    = "${each.key}._domainkey.${local.domain}"
+  type    = "CNAME"
+  content = "${each.key}.${local.domain}._domainkey.migadu.com"
+  ttl     = 1
+  proxied = false
+  comment = "Managed by OpenTofu: Migadu DKIM ${each.key}"
+}
+
+resource "cloudflare_dns_record" "migadu_dmarc" {
+  provider = cloudflare.zone
+  zone_id  = var.cloudflare_zone_id
+  name     = "_dmarc.${local.domain}"
+  type     = "TXT"
+  content  = "v=DMARC1; p=${var.migadu_dmarc_policy};"
+  ttl      = 1
+  proxied  = false
+  comment  = "Managed by OpenTofu: Migadu DMARC"
+}
+
+resource "cloudflare_dns_record" "migadu_dns_verification" {
+  provider = cloudflare.zone
+  count    = var.migadu_dns_verification == "" ? 0 : 1
+
+  zone_id = var.cloudflare_zone_id
+  name    = local.domain
+  type    = "TXT"
+  content = var.migadu_dns_verification
+  ttl     = 1
+  proxied = false
+  comment = "Managed by OpenTofu: Migadu domain verification"
+}
+
 output "www_target" {
   value = {
     name    = cloudflare_dns_record.www_site.name
@@ -145,9 +263,34 @@ output "pages_project" {
   }
 }
 
+output "turnstile" {
+  value = {
+    name    = cloudflare_turnstile_widget.signup.name
+    sitekey = cloudflare_turnstile_widget.signup.sitekey
+  }
+}
+
 output "d1_database" {
   value = {
     name = cloudflare_d1_database.mcc_signups.name
     id   = cloudflare_d1_database.mcc_signups.id
+  }
+}
+
+output "migadu_dns" {
+  value = {
+    mx = [
+      {
+        priority = cloudflare_dns_record.migadu_mx_primary.priority
+        content  = cloudflare_dns_record.migadu_mx_primary.content
+      },
+      {
+        priority = cloudflare_dns_record.migadu_mx_secondary.priority
+        content  = cloudflare_dns_record.migadu_mx_secondary.content
+      },
+    ]
+    spf   = cloudflare_dns_record.migadu_spf.content
+    dmarc = cloudflare_dns_record.migadu_dmarc.content
+    dkim  = { for key, record in cloudflare_dns_record.migadu_dkim : key => record.content }
   }
 }

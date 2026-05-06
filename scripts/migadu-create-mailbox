@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${MIGADU_USER:?Set MIGADU_USER to your Migadu login email.}"
+: "${MIGADU_TOKEN:?Set MIGADU_TOKEN to a Migadu API token.}"
+: "${MIGADU_MAILBOX_PASSWORD:?Set MIGADU_MAILBOX_PASSWORD for the new mailbox.}"
+
+domain="${MIGADU_DOMAIN:-marxcompute.club}"
+local_part="${MIGADU_MAILBOX:-hello}"
+name="${MIGADU_MAILBOX_NAME:-Marx Compute Club}"
+
+jq -n \
+  --arg local_part "$local_part" \
+  --arg name "$name" \
+  --arg password "$MIGADU_MAILBOX_PASSWORD" \
+  '{local_part:$local_part, name:$name, password:$password}' |
+  curl -fsS \
+    -u "$MIGADU_USER:$MIGADU_TOKEN" \
+    -H "Content-Type: application/json" \
+    -X POST \
+    -d @- \
+    "https://api.migadu.com/v1/domains/$domain/mailboxes"

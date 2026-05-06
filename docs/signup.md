@@ -58,8 +58,17 @@ signups to it.
 
 ## Turnstile
 
-Set `TURNSTILE_SECRET_KEY` when the form includes a Turnstile widget. Without
-that variable, local signup skips bot verification.
+Turnstile is managed in OpenTofu with `cloudflare_turnstile_widget.signup`.
+The Cloudflare Pages project receives:
+
+```text
+TURNSTILE_SITE_KEY
+TURNSTILE_SECRET_KEY
+```
+
+The frontend fetches `/api/config` to get the public site key. The signup
+function verifies `cf-turnstile-response` when `TURNSTILE_SECRET_KEY` exists.
+Without that variable, local signup skips bot verification.
 
 ## Canonical Subscriber Fields
 

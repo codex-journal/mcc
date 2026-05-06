@@ -25,6 +25,7 @@ node scripts/test-signup.mjs
 ```
 
 See `docs/signup.md` for provider sync and D1 notes.
+See `docs/email.md` for Migadu mailbox setup.
 
 ## Build
 

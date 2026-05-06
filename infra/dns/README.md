@@ -5,8 +5,10 @@ This stack manages the Cloudflare pieces needed for the launch site:
 ```text
 Cloudflare Pages project: marxcompute-club
 D1 database:              mcc-signups
+Turnstile widget:         MCC signup
 custom domain:            www.marxcompute.club
 DNS:                      www.marxcompute.club -> marxcompute-club.pages.dev
+Mail DNS:                 Migadu MX/SPF/DKIM/DMARC
 ```
 
 The apex `marxcompute.club` is intentionally left unmanaged here so it can later point to a VPS.
@@ -54,15 +56,16 @@ tofu apply
 The account token should be scoped to:
 
 ```text
-Account / Pages / Write
-Account / D1 / Write
+Account / Pages / Write      (shown as Edit in some Cloudflare UI)
+Account / D1 / Write         (shown as Edit in some Cloudflare UI)
+Account / Turnstile / Write  (shown as Edit in some Cloudflare UI)
 ```
 
 The zone token should be scoped to:
 
 ```text
 Zone / Zone / Read
-Zone / DNS / Write
+Zone / DNS / Write           (shown as Edit in some Cloudflare UI)
 ```
 
 Limit the zone token to `marxcompute.club`, and limit the account token to the
@@ -76,6 +79,13 @@ zone-scoped. The D1 API is account-scoped:
 ```
 
 So the token must include account permissions, not only DNS/zone permissions.
+
+To enable Migadu domain verification, set the optional root TXT value returned
+by Migadu:
+
+```bash
+export TF_VAR_migadu_dns_verification="..."
+```
 
 ## Deploy
 
