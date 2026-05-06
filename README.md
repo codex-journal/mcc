@@ -26,9 +26,20 @@ node scripts/test-signup.mjs
 
 See `docs/signup.md` for provider sync and D1 notes.
 
-## DNS
+## Build
 
-DNS is managed with OpenTofu under `infra/dns`.
+Cloudflare Pages deploys the static assets from `dist` and uploads Pages
+Functions from the repo-level `functions` directory:
 
-For now, only `www.marxcompute.club` points at GitHub Pages. The apex
-`marxcompute.club` is reserved for a future VPS.
+```bash
+scripts/build-site
+wrangler pages deploy dist --project-name marxcompute-club --branch main
+```
+
+## Cloudflare Infra
+
+Cloudflare Pages, D1, the `www` custom domain, and DNS are managed with
+OpenTofu under `infra/dns`.
+
+For now, only `www.marxcompute.club` is managed for the launch site. The apex
+`marxcompute.club` remains reserved for a future VPS.
