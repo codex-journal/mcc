@@ -126,3 +126,17 @@ unless the editorial naming changes:
 ```text
 Marx Compute Club <material@marxcompute.club>
 ```
+
+Create broadcast drafts through the API rather than the dashboard:
+
+```bash
+export RESEND_API_KEY="re_..."
+scripts/resend-create-broadcast \
+  --subject "First MCC notice" \
+  --name "First MCC notice" \
+  --text path/to/body.txt
+```
+
+The helper defaults to the `MCC announcements` segment and
+`Marx Compute Club <material@marxcompute.club>`. It creates a draft unless
+`--send` is passed.

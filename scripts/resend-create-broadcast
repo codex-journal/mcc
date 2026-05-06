@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${RESEND_API_KEY:?Set RESEND_API_KEY to a Resend API key.}"
+
+segment_id="${RESEND_SEGMENT_ID:-aa859afd-e0a1-401a-b8f7-f97fa63d4373}"
+from="${RESEND_FROM:-Marx Compute Club <material@marxcompute.club>}"
+name=""
+subject=""
+html_file=""
+text_file=""
+send="false"
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  scripts/resend-create-broadcast --subject SUBJECT [--name NAME] [--html FILE] [--text FILE] [--send]
+
+Creates a Resend broadcast draft by default.
+
+Environment:
+  RESEND_API_KEY       Required Resend API key.
+  RESEND_SEGMENT_ID    Defaults to MCC announcements.
+  RESEND_FROM          Defaults to Marx Compute Club <material@marxcompute.club>.
+USAGE
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --subject)
+      subject="${2:?Missing value for --subject}"
+      shift 2
+      ;;
+    --name)
+      name="${2:?Missing value for --name}"
+      shift 2
+      ;;
+    --html)
+      html_file="${2:?Missing value for --html}"
+      shift 2
+      ;;
+    --text)
+      text_file="${2:?Missing value for --text}"
+      shift 2
+      ;;
+    --send)
+      send="true"
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      printf 'Unknown argument: %s\n\n' "$1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+if [ -z "$subject" ]; then
+  printf '%s\n\n' "Missing --subject." >&2
+  usage >&2
+  exit 2
+fi
+
+if [ -z "$html_file" ] && [ -z "$text_file" ]; then
+  printf '%s\n\n' "Provide --html FILE or --text FILE." >&2
+  usage >&2
+  exit 2
+fi
+
+if [ -n "$html_file" ] && [ ! -f "$html_file" ]; then
+  printf 'HTML file not found: %s\n' "$html_file" >&2
+  exit 2
+fi
+
+if [ -n "$text_file" ] && [ ! -f "$text_file" ]; then
+  printf 'Text file not found: %s\n' "$text_file" >&2
+  exit 2
+fi
+
+payload="$(
+  jq -n \
+    --arg segmentId "$segment_id" \
+    --arg from "$from" \
+    --arg subject "$subject" \
+    --arg name "$name" \
+    --argjson send "$send" \
+    '{
+      segmentId: $segmentId,
+      from: $from,
+      subject: $subject,
+      send: $send
+    }
+    + (if $name == "" then {} else {name: $name} end)'
+)"
+
+if [ -n "$html_file" ]; then
+  payload="$(
+    jq --rawfile html "$html_file" '. + {html: $html}' <<<"$payload"
+  )"
+fi
+
+if [ -n "$text_file" ]; then
+  payload="$(
+    jq --rawfile text "$text_file" '. + {text: $text}' <<<"$payload"
+  )"
+fi
+
+status_file="$(mktemp)"
+body_file="$(mktemp)"
+trap 'rm -f "$status_file" "$body_file"' EXIT
+
+printf '%s' "$payload" |
+  curl -sS \
+    -o "$body_file" \
+    -w "%{http_code}" \
+    -H "Authorization: Bearer $RESEND_API_KEY" \
+    -H "Content-Type: application/json" \
+    -X POST \
+    -d @- \
+    "https://api.resend.com/broadcasts" >"$status_file"
+
+status="$(cat "$status_file")"
+if [ "$status" -ge 200 ] && [ "$status" -lt 300 ]; then
+  cat "$body_file"
+  printf '\n'
+  exit 0
+fi
+
+printf 'Resend API returned HTTP %s:\n' "$status" >&2
+cat "$body_file" >&2
+printf '\n' >&2
+exit 1
