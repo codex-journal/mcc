@@ -59,16 +59,18 @@ export MIGADU_MAILBOX_PASSWORD="..."
 scripts/migadu-create-mailbox
 ```
 
-Likely public addresses:
+Launch addresses:
 
 ```text
-hello@marxcompute.club
-events@marxcompute.club
+source@marxcompute.club
+material@marxcompute.club
 admin@marxcompute.club
 ```
 
-Use aliases or identities for `events` and `admin` if one real mailbox is
-enough at launch.
+Use `source@marxcompute.club` for direct public correspondence and
+`material@marxcompute.club` for broadcasts, theoretical notes, and event
+announcements. Keep `admin@marxcompute.club` for provider accounts and private
+administration.
 
 ## Client Settings
 
@@ -111,5 +113,16 @@ scripts/resend-list-segments
 scripts/resend-create-segment
 ```
 
+The launch broadcast segment is:
+
+```text
+MCC announcements
+aa859afd-e0a1-401a-b8f7-f97fa63d4373
+```
+
 Use `material@marxcompute.club` as the public broadcast sender/reply identity
-unless the editorial naming changes.
+unless the editorial naming changes:
+
+```text
+Marx Compute Club <material@marxcompute.club>
+```
