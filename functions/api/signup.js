@@ -140,12 +140,7 @@ async function syncResend(env, email, metadata) {
   try {
     const contactPayload = {
       email,
-      unsubscribed: false,
-      properties: {
-        mcc_source: metadata.source,
-        mcc_referrer: metadata.path || "",
-        mcc_user_agent: metadata.userAgent || ""
-      }
+      unsubscribed: false
     };
 
     if (env.RESEND_SEGMENT_ID) {

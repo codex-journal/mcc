@@ -75,6 +75,10 @@ The worker posts accepted signups to `POST /contacts`. When
 `segments: [{ id: RESEND_SEGMENT_ID }]`; if the contact already exists, it adds
 the existing email to that segment.
 
+Do not send signup metadata as Resend contact properties unless those properties
+have already been created in Resend. D1 remains the canonical store for signup
+source, referrer, and user-agent metadata.
+
 ```bash
 export CLOUDFLARE_ACCOUNT_ID="$TF_VAR_cloudflare_account_id"
 wrangler pages secret put RESEND_API_KEY --project-name marxcompute-club
