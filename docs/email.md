@@ -1,0 +1,76 @@
+# MCC Email
+
+Use Migadu for human mailbox email on `marxcompute.club`. Do not use Migadu
+for bulk broadcasts.
+
+## Migadu Account
+
+Create a Migadu account and API token. The API token is a user token, not a
+domain DNS token.
+
+```bash
+export MIGADU_USER="you@example.com"
+export MIGADU_TOKEN="..."
+```
+
+Create the domain in Migadu:
+
+```bash
+scripts/migadu-create-domain
+```
+
+Fetch Migadu's expected DNS records:
+
+```bash
+scripts/migadu-records | jq
+```
+
+If Migadu returns a `dns_verification.value`, apply it through OpenTofu:
+
+```bash
+export TF_VAR_migadu_dns_verification="value-from-migadu"
+cd infra/dns
+tofu plan
+tofu apply
+```
+
+The OpenTofu stack already manages the standard Migadu MX, SPF, DKIM, and
+DMARC records.
+
+## Mailboxes
+
+Create an initial mailbox:
+
+```bash
+export MIGADU_MAILBOX="hello"
+export MIGADU_MAILBOX_NAME="Marx Compute Club"
+export MIGADU_MAILBOX_PASSWORD="..."
+scripts/migadu-create-mailbox
+```
+
+Likely public addresses:
+
+```text
+hello@marxcompute.club
+events@marxcompute.club
+admin@marxcompute.club
+```
+
+Use aliases or identities for `events` and `admin` if one real mailbox is
+enough at launch.
+
+## Client Settings
+
+Migadu webmail:
+
+```text
+https://webmail.migadu.com
+```
+
+Standard client settings:
+
+```text
+IMAP: imap.migadu.com:993 TLS
+SMTP: smtp.migadu.com:465 TLS
+POP:  pop.migadu.com:995 TLS
+```

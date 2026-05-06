@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${MIGADU_USER:?Set MIGADU_USER to your Migadu login email.}"
+: "${MIGADU_TOKEN:?Set MIGADU_TOKEN to a Migadu API token.}"
+
+domain="${MIGADU_DOMAIN:-marxcompute.club}"
+
+curl -fsS \
+  -u "$MIGADU_USER:$MIGADU_TOKEN" \
+  -H "Content-Type: application/json" \
+  "https://api.migadu.com/v1/domains/$domain/records"
