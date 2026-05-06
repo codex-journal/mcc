@@ -1,0 +1,7 @@
+Marx Compute Club outbound smoke test.
+
+This message verifies that Resend can send from:
+
+Marx Compute Club <material@marxcompute.club>
+
+If this lands in the inbox, outbound delivery from the MCC domain is working.
