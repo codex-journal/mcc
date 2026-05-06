@@ -250,6 +250,40 @@ resource "cloudflare_dns_record" "migadu_dns_verification" {
   comment = "Managed by OpenTofu: Migadu domain verification"
 }
 
+resource "cloudflare_dns_record" "resend_dkim" {
+  provider = cloudflare.zone
+  zone_id  = var.cloudflare_zone_id
+  name     = "resend._domainkey.${local.domain}"
+  type     = "TXT"
+  content  = "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCqUJCDM0Zp6dTGc2zGUylfyQN5ExpD/E8gDS1ATG0QiLCl7GDburYkTT/tkAY2wZpXEDObwbv0vkyN2DX9DaDcUy9eti2L7pu+t3KvCJ7R51pAHHu/jJtv3abG2mUO9rXZ3e6wtqCeKvRo645pBTcXDm1P3P8Vu4h25S0TxnT+WQIDAQAB"
+  ttl      = 1
+  proxied  = false
+  comment  = "Managed by OpenTofu: Resend DKIM"
+}
+
+resource "cloudflare_dns_record" "resend_bounce_mx" {
+  provider = cloudflare.zone
+  zone_id  = var.cloudflare_zone_id
+  name     = "send.${local.domain}"
+  type     = "MX"
+  content  = "feedback-smtp.us-east-1.amazonses.com"
+  priority = 10
+  ttl      = 1
+  proxied  = false
+  comment  = "Managed by OpenTofu: Resend bounce MX"
+}
+
+resource "cloudflare_dns_record" "resend_bounce_spf" {
+  provider = cloudflare.zone
+  zone_id  = var.cloudflare_zone_id
+  name     = "send.${local.domain}"
+  type     = "TXT"
+  content  = "v=spf1 include:amazonses.com ~all"
+  ttl      = 1
+  proxied  = false
+  comment  = "Managed by OpenTofu: Resend bounce SPF"
+}
+
 output "www_target" {
   value = {
     name    = cloudflare_dns_record.www_site.name
@@ -296,5 +330,23 @@ output "migadu_dns" {
     spf   = cloudflare_dns_record.migadu_spf.content
     dmarc = cloudflare_dns_record.migadu_dmarc.content
     dkim  = { for key, record in cloudflare_dns_record.migadu_dkim : key => record.content }
+  }
+}
+
+output "resend_dns" {
+  value = {
+    dkim = {
+      name    = cloudflare_dns_record.resend_dkim.name
+      content = cloudflare_dns_record.resend_dkim.content
+    }
+    bounce_mx = {
+      name     = cloudflare_dns_record.resend_bounce_mx.name
+      content  = cloudflare_dns_record.resend_bounce_mx.content
+      priority = cloudflare_dns_record.resend_bounce_mx.priority
+    }
+    bounce_spf = {
+      name    = cloudflare_dns_record.resend_bounce_spf.name
+      content = cloudflare_dns_record.resend_bounce_spf.content
+    }
   }
 }
