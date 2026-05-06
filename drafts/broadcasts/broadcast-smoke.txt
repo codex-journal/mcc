@@ -1,0 +1,7 @@
+Marx Compute Club broadcast smoke test.
+
+This message verifies the full path:
+
+live site signup -> D1 -> Resend segment -> broadcast send
+
+If this lands in the inbox, the current MCC announcement broadcast path works.

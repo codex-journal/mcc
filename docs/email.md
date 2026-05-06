@@ -111,6 +111,7 @@ Useful local helpers:
 export RESEND_API_KEY="re_..."
 scripts/resend-list-segments
 scripts/resend-create-segment
+scripts/resend-list-segment-contacts
 ```
 
 The launch broadcast segment is:
@@ -141,6 +142,22 @@ The helper defaults to the `MCC announcements` segment and
 `Marx Compute Club <material@marxcompute.club>`. It creates a draft unless
 `--send` is passed. The raw Resend HTTP API currently expects `segment_id`;
 their SDK examples use `segmentId`.
+
+Before sending a broadcast smoke test, inspect the segment contacts:
+
+```bash
+scripts/resend-list-segment-contacts
+```
+
+Then create and immediately send the test broadcast:
+
+```bash
+scripts/resend-create-broadcast \
+  --subject "MCC broadcast smoke test" \
+  --name "MCC broadcast smoke test" \
+  --text drafts/broadcasts/broadcast-smoke.txt \
+  --send
+```
 
 Send one direct outbound smoke-test email without touching the broadcast
 segment:
