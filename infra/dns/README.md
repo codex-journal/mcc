@@ -70,8 +70,12 @@ The zone token should be scoped to:
 ```text
 Zone / Zone / Read
 Zone / DNS / Write           (shown as Edit in some Cloudflare UI)
-Zone / Rulesets / Write      (shown as Edit in some Cloudflare UI)
+Zone / Single Redirect / Write
 ```
+
+Cloudflare may show `Single Redirect / Edit` in the dashboard and
+`Dynamic URL Redirects Write` in API docs for the same ruleset-backed redirect
+path.
 
 Limit the zone token to `marxcompute.club`, and limit the account token to the
 Cloudflare account whose ID is in `TF_VAR_cloudflare_account_id`.
