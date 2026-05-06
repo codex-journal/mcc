@@ -83,13 +83,13 @@ fi
 
 payload="$(
   jq -n \
-    --arg segmentId "$segment_id" \
+    --arg segment_id "$segment_id" \
     --arg from "$from" \
     --arg subject "$subject" \
     --arg name "$name" \
     --argjson send "$send" \
     '{
-      segmentId: $segmentId,
+      segment_id: $segment_id,
       from: $from,
       subject: $subject,
       send: $send

@@ -139,4 +139,5 @@ scripts/resend-create-broadcast \
 
 The helper defaults to the `MCC announcements` segment and
 `Marx Compute Club <material@marxcompute.club>`. It creates a draft unless
-`--send` is passed.
+`--send` is passed. The raw Resend HTTP API currently expects `segment_id`;
+their SDK examples use `segmentId`.
