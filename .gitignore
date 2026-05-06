@@ -3,3 +3,14 @@
 .dolt/
 *.db
 .beads-credential-key
+
+# Local build and Cloudflare state
+dist/
+.wrangler/
+.env
+.env.*
+
+# OpenTofu state
+infra/dns/.terraform/
+infra/dns/terraform.tfstate
+infra/dns/terraform.tfstate.*
