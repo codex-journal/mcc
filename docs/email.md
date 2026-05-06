@@ -3,6 +3,10 @@
 Use Migadu for human mailbox email on `marxcompute.club`. Do not use Migadu
 for bulk broadcasts.
 
+Use Resend for announcement/broadcast delivery. Resend is authenticated for
+sending from `marxcompute.club`; Migadu remains responsible for normal inbound
+mail at the root domain.
+
 ## Migadu Account
 
 Create a Migadu account and API token. The API token is a user token, not a
@@ -81,3 +85,16 @@ IMAP: imap.migadu.com:993 TLS
 SMTP: smtp.migadu.com:465 TLS
 POP:  pop.migadu.com:995 TLS
 ```
+
+## Resend
+
+Resend DNS is represented in OpenTofu:
+
+```text
+TXT resend._domainkey.marxcompute.club
+MX  send.marxcompute.club -> feedback-smtp.us-east-1.amazonses.com
+TXT send.marxcompute.club -> v=spf1 include:amazonses.com ~all
+```
+
+The `send.marxcompute.club` MX record is only for Resend bounce handling. It
+does not replace the Migadu root MX records.
