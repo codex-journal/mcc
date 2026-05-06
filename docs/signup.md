@@ -45,16 +45,48 @@ the account, which fails for narrowly scoped Cloudflare tokens.
 
 ## Resend Sync
 
-Set these as Cloudflare environment variables/secrets once Resend is configured:
+Resend's current broadcast model uses global contacts plus segments. The older
+audience API still exists in their docs but is deprecated; use segments for MCC
+announcement routing.
+
+Create or retrieve the launch segment:
+
+```bash
+export RESEND_API_KEY="re_..."
+scripts/resend-create-segment
+```
+
+The output `id` is the value for `RESEND_SEGMENT_ID`.
+
+Set these as Cloudflare Pages secrets once Resend is configured:
 
 ```text
 RESEND_API_KEY
 RESEND_SEGMENT_ID
 ```
 
-`RESEND_SEGMENT_ID` is optional, but broadcasts are normally sent to a segment,
-so the launch path should create one segment for MCC announcements and add
-signups to it.
+`RESEND_API_KEY` must be able to create contacts and add them to segments.
+Resend's documented key choices are currently `full_access` and
+`sending_access`; `sending_access` is not enough for signup sync. Scope the key
+to this worker operationally by using it only as a Cloudflare Pages secret.
+
+The worker posts accepted signups to `POST /contacts`. When
+`RESEND_SEGMENT_ID` is present it creates the contact with
+`segments: [{ id: RESEND_SEGMENT_ID }]`; if the contact already exists, it adds
+the existing email to that segment.
+
+```bash
+export CLOUDFLARE_ACCOUNT_ID="$TF_VAR_cloudflare_account_id"
+wrangler pages secret put RESEND_API_KEY --project-name marxcompute-club
+wrangler pages secret put RESEND_SEGMENT_ID --project-name marxcompute-club
+```
+
+Redeploy after setting secrets:
+
+```bash
+scripts/build-site
+wrangler pages deploy dist --project-name marxcompute-club --branch main
+```
 
 ## Turnstile
 

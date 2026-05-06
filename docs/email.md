@@ -98,3 +98,18 @@ TXT send.marxcompute.club -> v=spf1 include:amazonses.com ~all
 
 The `send.marxcompute.club` MX record is only for Resend bounce handling. It
 does not replace the Migadu root MX records.
+
+After DNS verification, create a Resend API key with enough permission to manage
+contacts and segments. `sending_access` is not sufficient for the signup sync
+path.
+
+Useful local helpers:
+
+```bash
+export RESEND_API_KEY="re_..."
+scripts/resend-list-segments
+scripts/resend-create-segment
+```
+
+Use `material@marxcompute.club` as the public broadcast sender/reply identity
+unless the editorial naming changes.
