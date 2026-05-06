@@ -141,3 +141,14 @@ The helper defaults to the `MCC announcements` segment and
 `Marx Compute Club <material@marxcompute.club>`. It creates a draft unless
 `--send` is passed. The raw Resend HTTP API currently expects `segment_id`;
 their SDK examples use `segmentId`.
+
+Send one direct outbound smoke-test email without touching the broadcast
+segment:
+
+```bash
+export RESEND_API_KEY="re_..."
+scripts/resend-send-test-email \
+  --to you@example.com \
+  --subject "MCC outbound smoke test" \
+  --text drafts/broadcasts/outbound-smoke.txt
+```
