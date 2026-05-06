@@ -54,7 +54,7 @@ variable "cloudflare_pages_project_name" {
 variable "migadu_dns_verification" {
   description = "Optional Migadu root TXT verification value from the Migadu domain records API."
   type        = string
-  default     = ""
+  default     = "hosted-email-verify=4oneiln0"
 }
 
 variable "migadu_dmarc_policy" {

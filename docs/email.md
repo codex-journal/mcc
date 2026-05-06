@@ -25,7 +25,14 @@ Fetch Migadu's expected DNS records:
 scripts/migadu-records | jq
 ```
 
-If Migadu returns a `dns_verification.value`, apply it through OpenTofu:
+Migadu currently expects this root verification TXT:
+
+```text
+hosted-email-verify=4oneiln0
+```
+
+That value is represented in OpenTofu as `migadu_dns_verification`.
+If Migadu rotates it later, apply the new value through OpenTofu:
 
 ```bash
 export TF_VAR_migadu_dns_verification="value-from-migadu"
