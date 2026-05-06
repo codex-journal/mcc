@@ -70,6 +70,10 @@ The frontend fetches `/api/config` to get the public site key. The signup
 function verifies `cf-turnstile-response` when `TURNSTILE_SECRET_KEY` exists.
 Without that variable, local signup skips bot verification.
 
+The public site key is also pinned in `wrangler.jsonc` for direct Pages
+deployments. The secret key stays in Cloudflare Pages project configuration and
+is not committed.
+
 ## Canonical Subscriber Fields
 
 The portable subscriber record is:

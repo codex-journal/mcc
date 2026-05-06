@@ -11,6 +11,7 @@
     }
   ],
   "vars": {
-    "SIGNUP_ENV": "production"
+    "SIGNUP_ENV": "production",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAADJwwAj_5Vg0oE0V"
   }
 }
