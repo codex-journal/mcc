@@ -44,5 +44,7 @@ wrangler pages deploy dist --project-name marxcompute-club --branch main
 Cloudflare Pages, D1, the `www` custom domain, and DNS are managed with
 OpenTofu under `infra/dns`.
 
-For now, only `www.marxcompute.club` is managed for the launch site. The apex
-`marxcompute.club` remains reserved for a future VPS.
+For now, `www.marxcompute.club` is the canonical launch site. The apex
+`marxcompute.club` is configured as an originless Cloudflare redirect to `www`
+so typed URLs work while preserving the future option to point the apex at a
+VPS.

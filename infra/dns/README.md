@@ -8,10 +8,14 @@ D1 database:              mcc-signups
 Turnstile widget:         MCC signup
 custom domain:            www.marxcompute.club
 DNS:                      www.marxcompute.club -> marxcompute-club.pages.dev
+Redirect:                 marxcompute.club -> https://www.marxcompute.club
 Mail DNS:                 Migadu MX/SPF/DKIM/DMARC
 ```
 
-The apex `marxcompute.club` is intentionally left unmanaged here so it can later point to a VPS.
+The apex `marxcompute.club` uses an originless proxied `A` record
+(`192.0.2.1`) plus a Cloudflare Single Redirect. This keeps typed apex URLs
+working now while leaving a clean future migration path: remove the redirect
+rule and replace the dummy apex `A` record with the VPS address.
 
 ## Apply
 
@@ -66,6 +70,7 @@ The zone token should be scoped to:
 ```text
 Zone / Zone / Read
 Zone / DNS / Write           (shown as Edit in some Cloudflare UI)
+Zone / Rulesets / Write      (shown as Edit in some Cloudflare UI)
 ```
 
 Limit the zone token to `marxcompute.club`, and limit the account token to the
@@ -100,10 +105,16 @@ wrangler d1 migrations apply mcc-signups --remote --config wrangler.jsonc
 wrangler pages deploy dist --project-name marxcompute-club --branch main
 ```
 
+Pages deployment configuration is partially bootstrapped by OpenTofu, but
+runtime secrets such as `RESEND_API_KEY` and `RESEND_SEGMENT_ID` are managed by
+Wrangler. The `cloudflare_pages_project` resource ignores deployment config
+drift so later DNS/ruleset applies do not delete manually-set Pages secrets.
+
 Then test:
 
 ```bash
 curl -I https://www.marxcompute.club
+curl -I https://marxcompute.club
 curl -sS https://www.marxcompute.club/api/signup
 SIGNUP_URL=https://www.marxcompute.club/api/signup node scripts/test-signup.mjs
 ```
