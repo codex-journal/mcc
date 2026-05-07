@@ -113,24 +113,6 @@
       border-bottom: 1px solid var(--rule);
     }
 
-    .mark {
-      width: min(128px, 100%);
-      aspect-ratio: 1;
-      border: 1px solid var(--rule);
-      background: var(--pale);
-    }
-
-    .mark svg {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
-    .mark text {
-      font-family: var(--font-display);
-      font-weight: 900;
-    }
-
     .statement {
       display: grid;
       gap: 22px;
@@ -148,7 +130,6 @@
       flex-wrap: wrap;
       gap: 18px;
       align-items: start;
-      justify-content: space-between;
     }
 
     .kicker {
@@ -160,28 +141,26 @@
       text-transform: uppercase;
     }
 
-    .lede {
-      max-width: 12ch;
+    .proposition {
+      max-width: 34ch;
       margin: 0;
-      font-family: var(--font-display);
-      font-size: clamp(44px, 7vw, 96px);
-      font-weight: 900;
-      line-height: 0.9;
+      font-family: var(--font-body);
+      font-size: clamp(18px, 2.4vw, 28px);
+      font-weight: 700;
+      line-height: 1.28;
       letter-spacing: 0;
-      text-transform: uppercase;
     }
 
-    .claim-sequence {
+    .vector-list {
       display: grid;
-      gap: 6px;
+      gap: 8px;
       margin: 0;
+      padding: 0;
       font-family: var(--font-meta);
-      font-size: clamp(16px, 2vw, 22px);
-      line-height: 1.25;
-    }
-
-    .claim-sequence p {
-      margin: 0;
+      font-size: clamp(16px, 1.6vw, 20px);
+      line-height: 1.28;
+      list-style: none;
+      text-transform: uppercase;
     }
 
     .copy {
@@ -406,10 +385,6 @@
         border-right: 0;
         border-bottom: 1px solid var(--rule);
       }
-
-      .mark {
-        width: min(112px, 100%);
-      }
     }
 
     @media (max-width: 560px) {
@@ -436,26 +411,14 @@
     <section class="intro">
       <div class="statement">
         <div class="statement-head">
-          <p class="kicker">Capital simulation / source infrastructure / dependency revelation</p>
-          <div class="mark" aria-label="MCC dependency mark">
-            <svg viewBox="0 0 512 512" role="img" aria-label="MCC mark: M points to two Cs">
-              <rect width="512" height="512" fill="#f5f1e7"></rect>
-              <path d="M224 178 L171 294" fill="none" stroke="#0b0b0a" stroke-width="10" stroke-linecap="square"></path>
-              <path d="M288 178 L341 294" fill="none" stroke="#0b0b0a" stroke-width="10" stroke-linecap="square"></path>
-              <polygon fill="#0b0b0a" points="162,313 162,286 186,299"></polygon>
-              <polygon fill="#0b0b0a" points="350,313 326,299 350,286"></polygon>
-              <text fill="#0b0b0a" x="256" y="156" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="120" font-weight="900">M</text>
-              <text fill="#0b0b0a" x="128" y="420" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="144" font-weight="900">C</text>
-              <text fill="#0b0b0a" x="384" y="420" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="144" font-weight="900">C</text>
-            </svg>
-          </div>
+          <p class="kicker">Theory / simulation / infrastructure</p>
         </div>
-        <p class="lede">Harness theory.</p>
-        <div class="claim-sequence" aria-label="MCC operating sequence">
-          <p>the harness shapes thought.</p>
-          <p>theory commands feedback.</p>
-          <p>theory leaves traces.</p>
-        </div>
+        <p class="proposition">A build club for theory, simulation, and source infrastructure.</p>
+        <ul class="vector-list" aria-label="MCC vectors">
+          <li>Productive subsumption.</li>
+          <li>Source engineering.</li>
+          <li>Dependency revelation.</li>
+        </ul>
       </div>
 
       <div class="signup signup-primary">
@@ -483,7 +446,7 @@
 
     <section class="notice">
       <div class="notice-title">
-        <p class="kicker">First meeting info soon / NYC</p>
+        <p class="kicker">First event info soon / NYC</p>
         <h2>NYC.</h2>
       </div>
       <p class="copy">Marx Compute Club starts in New York. Event details and updates will go to the list first.</p>
@@ -493,7 +456,7 @@
       <div class="section">
         <h2>Work</h2>
         <ul>
-          <li>harness theory</li>
+          <li>productive subsumption</li>
           <li>capital simulation</li>
           <li>source infrastructure</li>
           <li>dependency revelation</li>
