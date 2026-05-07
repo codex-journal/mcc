@@ -5,3 +5,4 @@ rm -rf dist
 mkdir -p dist
 
 cp index.html favicon.svg dist/
+cp -R assets dist/
