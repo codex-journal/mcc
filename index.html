@@ -8,10 +8,12 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <style>
     @font-face {
+      /* Upstream ships this as AdwaitaSans-Regular.ttf, but the file is the
+         variable Adwaita Sans face with named instances through Black. */
       font-family: "MCC Display";
       src: url("./assets/fonts/AdwaitaSans-Regular.ttf") format("truetype");
       font-style: normal;
-      font-weight: 400 900;
+      font-weight: 100 900;
       font-display: swap;
     }
 
@@ -87,6 +89,7 @@
       font-family: var(--font-display);
       font-size: clamp(44px, 10vw, 132px);
       font-weight: 900;
+      font-synthesis-weight: none;
       line-height: 0.86;
       letter-spacing: 0;
       text-transform: uppercase;
@@ -335,7 +338,7 @@
         <div class="statement-head">
           <p class="kicker">Theory / simulation / infrastructure</p>
         </div>
-        <p class="proposition">A build club for theory, simulation, and source infrastructure.</p>
+        <p class="proposition">A build club for theory, simulation, and source infrastructure in the final stage of capital.</p>
         <ul class="vector-list" aria-label="MCC vectors">
           <li>Productive subsumption.</li>
           <li>Source engineering.</li>
