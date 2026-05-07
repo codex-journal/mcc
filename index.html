@@ -106,7 +106,7 @@
 
     .intro {
       display: grid;
-      grid-template-columns: minmax(240px, 0.85fr) minmax(280px, 1.15fr);
+      grid-template-columns: minmax(320px, 1fr) minmax(340px, 0.82fr);
       gap: 34px;
       align-items: start;
       padding: 42px 0;
@@ -114,7 +114,7 @@
     }
 
     .mark {
-      width: min(360px, 100%);
+      width: min(128px, 100%);
       aspect-ratio: 1;
       border: 1px solid var(--rule);
       background: var(--pale);
@@ -135,6 +135,20 @@
       display: grid;
       gap: 22px;
       align-content: start;
+    }
+
+    .hero-copy {
+      display: grid;
+      grid-column: 1;
+      gap: 18px;
+    }
+
+    .statement-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: start;
+      justify-content: space-between;
     }
 
     .kicker {
@@ -250,6 +264,19 @@
     .signup {
       display: grid;
       gap: 18px;
+    }
+
+    .signup-primary {
+      padding: 18px;
+      border: 1px solid var(--rule);
+      align-content: start;
+      background: var(--pale);
+    }
+
+    .signup-primary h2 {
+      margin-bottom: 18px;
+      color: var(--red);
+      font-size: clamp(18px, 2.2vw, 28px);
     }
 
     form {
@@ -381,7 +408,7 @@
       }
 
       .mark {
-        width: min(280px, 100%);
+        width: min(112px, 100%);
       }
     }
 
@@ -407,30 +434,59 @@
     </header>
 
     <section class="intro">
-      <div class="mark" aria-label="MCC dependency mark">
-        <svg viewBox="0 0 512 512" role="img" aria-label="MCC mark: M points to two Cs">
-          <rect width="512" height="512" fill="#f5f1e7"></rect>
-          <path d="M224 178 L171 294" fill="none" stroke="#0b0b0a" stroke-width="10" stroke-linecap="square"></path>
-          <path d="M288 178 L341 294" fill="none" stroke="#0b0b0a" stroke-width="10" stroke-linecap="square"></path>
-          <polygon fill="#0b0b0a" points="162,313 162,286 186,299"></polygon>
-          <polygon fill="#0b0b0a" points="350,313 326,299 350,286"></polygon>
-          <text fill="#0b0b0a" x="256" y="156" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="120" font-weight="900">M</text>
-          <text fill="#0b0b0a" x="128" y="420" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="144" font-weight="900">C</text>
-          <text fill="#0b0b0a" x="384" y="420" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="144" font-weight="900">C</text>
-        </svg>
-      </div>
-
       <div class="statement">
-        <p class="kicker">Productive subsumption / source engineering / addicting agency</p>
+        <div class="statement-head">
+          <p class="kicker">Productive subsumption / source engineering / addicting agency</p>
+          <div class="mark" aria-label="MCC dependency mark">
+            <svg viewBox="0 0 512 512" role="img" aria-label="MCC mark: M points to two Cs">
+              <rect width="512" height="512" fill="#f5f1e7"></rect>
+              <path d="M224 178 L171 294" fill="none" stroke="#0b0b0a" stroke-width="10" stroke-linecap="square"></path>
+              <path d="M288 178 L341 294" fill="none" stroke="#0b0b0a" stroke-width="10" stroke-linecap="square"></path>
+              <polygon fill="#0b0b0a" points="162,313 162,286 186,299"></polygon>
+              <polygon fill="#0b0b0a" points="350,313 326,299 350,286"></polygon>
+              <text fill="#0b0b0a" x="256" y="156" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="120" font-weight="900">M</text>
+              <text fill="#0b0b0a" x="128" y="420" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="144" font-weight="900">C</text>
+              <text fill="#0b0b0a" x="384" y="420" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="144" font-weight="900">C</text>
+            </svg>
+          </div>
+        </div>
         <p class="lede">Harness theory.</p>
         <div class="claim-sequence" aria-label="MCC operating sequence">
           <p>the harness shapes thought.</p>
           <p>theory commands feedback.</p>
           <p>the work leaves traces.</p>
         </div>
+      </div>
+
+      <div class="signup signup-primary">
+        <h2>Get on the list.</h2>
+        <p class="copy">First meeting details, source drops, and working notes.</p>
+        <form id="signup-form" action="/api/signup" method="post">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="email" autocomplete="email" required>
+          <input class="hp" name="company" type="text" tabindex="-1" autocomplete="off">
+          <input name="source" type="hidden" value="homepage">
+          <input id="turnstile-token" name="cf-turnstile-response" type="hidden">
+          <div class="turnstile-shell" id="turnstile-shell" hidden>
+            <div id="turnstile-widget"></div>
+          </div>
+          <button type="submit">Join</button>
+          <p class="form-status" id="signup-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <div class="hero-copy">
         <p class="copy">MCC opens a public intake port for theory that can be formalized, simulated, traced, or broken.</p>
         <p class="copy">Capital simulation, source infrastructure, and dependency revelation are the working surface. The point is not discourse about tools, but tools that force theory to leave traces.</p>
       </div>
+    </section>
+
+    <section class="notice">
+      <div class="notice-title">
+        <p class="kicker">First meeting info soon / NYC</p>
+        <h2>Bring work.</h2>
+      </div>
+      <p class="copy">Bring a thesis that can be formalized, simulated, traced, or broken. Bring a workflow, diagram, simulation, dataset, critique, or source artifact. Generalize what survives.</p>
     </section>
 
     <section class="sections" aria-label="Project areas">
@@ -452,29 +508,6 @@
           <li>source infrastructure</li>
           <li>diagrams / datasets / source</li>
         </ul>
-      </div>
-
-    </section>
-
-    <section class="notice">
-      <div class="notice-title">
-        <p class="kicker">First meeting info soon / NYC</p>
-        <h2>First signal.</h2>
-      </div>
-      <div class="signup">
-        <p class="copy">Bring a thesis that can be formalized, simulated, traced, or broken. Bring a workflow, diagram, simulation, dataset, critique, or source artifact. Generalize what survives.</p>
-        <form id="signup-form" action="/api/signup" method="post">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" placeholder="email" autocomplete="email" required>
-          <input class="hp" name="company" type="text" tabindex="-1" autocomplete="off">
-          <input name="source" type="hidden" value="homepage">
-          <input id="turnstile-token" name="cf-turnstile-response" type="hidden">
-          <div class="turnstile-shell" id="turnstile-shell" hidden>
-            <div id="turnstile-widget"></div>
-          </div>
-          <button type="submit">Join</button>
-          <p class="form-status" id="signup-status" role="status" aria-live="polite"></p>
-        </form>
       </div>
     </section>
 
