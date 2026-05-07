@@ -7,15 +7,17 @@ Cloudflare Pages project: marxcompute-club
 D1 database:              mcc-signups
 Turnstile widget:         MCC signup
 custom domain:            www.marxcompute.club
+custom domain:            marxcompute.club
 DNS:                      www.marxcompute.club -> marxcompute-club.pages.dev
-Redirect:                 marxcompute.club -> https://www.marxcompute.club
+DNS:                      marxcompute.club -> marxcompute-club.pages.dev
 Mail DNS:                 Migadu MX/SPF/DKIM/DMARC
 ```
 
-The apex `marxcompute.club` uses an originless proxied `A` record
-(`192.0.2.1`) plus a Cloudflare forwarding Page Rule. This keeps typed apex URLs
-working now while leaving a clean future migration path: remove the Page Rule
-and replace the dummy apex `A` record with the VPS address.
+The apex `marxcompute.club` is attached directly to the Cloudflare Pages project
+and uses a proxied apex `CNAME` record to the Pages project. Cloudflare flattens
+the apex CNAME at the edge. This keeps typed apex URLs working now without
+redirect rules, and keeps a clean future migration path: remove the Pages custom
+domain and replace the apex DNS record with the VPS address.
 
 ## Apply
 
@@ -70,7 +72,6 @@ The zone token should be scoped to:
 ```text
 Zone / Zone / Read
 Zone / DNS / Write           (shown as Edit in some Cloudflare UI)
-Zone / Page Rules / Write    (shown as Edit in some Cloudflare UI)
 ```
 
 Limit the zone token to `marxcompute.club`, and limit the account token to the
