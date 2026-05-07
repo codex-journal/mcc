@@ -171,6 +171,13 @@ resource "cloudflare_pages_domain" "www" {
   name         = "www.${local.domain}"
 }
 
+resource "cloudflare_pages_domain" "apex" {
+  provider     = cloudflare.account
+  account_id   = var.cloudflare_account_id
+  project_name = cloudflare_pages_project.mcc_site.name
+  name         = local.domain
+}
+
 resource "cloudflare_dns_record" "www_site" {
   provider = cloudflare.zone
   zone_id  = var.cloudflare_zone_id
@@ -182,30 +189,15 @@ resource "cloudflare_dns_record" "www_site" {
   comment  = "Managed by OpenTofu: MCC Cloudflare Pages"
 }
 
-resource "cloudflare_dns_record" "apex_redirect_originless" {
+resource "cloudflare_dns_record" "apex_site" {
   provider = cloudflare.zone
   zone_id  = var.cloudflare_zone_id
   name     = local.domain
-  type     = "A"
-  content  = "192.0.2.1"
+  type     = "CNAME"
+  content  = "${cloudflare_pages_project.mcc_site.name}.pages.dev"
   ttl      = 1
   proxied  = true
-  comment  = "Managed by OpenTofu: originless apex redirect to www"
-}
-
-resource "cloudflare_page_rule" "apex_to_www_redirect" {
-  provider = cloudflare.zone
-  zone_id  = var.cloudflare_zone_id
-  target   = "${local.domain}/*"
-  priority = 1
-  status   = "active"
-
-  actions = {
-    forwarding_url = {
-      status_code = 301
-      url         = "https://www.${local.domain}/$1"
-    }
-  }
+  comment  = "Managed by OpenTofu: MCC Cloudflare Pages apex"
 }
 
 resource "cloudflare_dns_record" "migadu_mx_primary" {
@@ -323,14 +315,12 @@ output "www_target" {
   }
 }
 
-output "apex_redirect" {
+output "apex_target" {
   value = {
-    dns_name    = cloudflare_dns_record.apex_redirect_originless.name
-    dns_type    = cloudflare_dns_record.apex_redirect_originless.type
-    dns_content = cloudflare_dns_record.apex_redirect_originless.content
-    proxied     = cloudflare_dns_record.apex_redirect_originless.proxied
-    target      = "https://www.${local.domain}"
-    status_code = 301
+    name    = cloudflare_dns_record.apex_site.name
+    type    = cloudflare_dns_record.apex_site.type
+    content = cloudflare_dns_record.apex_site.content
+    proxied = cloudflare_dns_record.apex_site.proxied
   }
 }
 
