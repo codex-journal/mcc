@@ -119,12 +119,6 @@
       align-content: start;
     }
 
-    .hero-copy {
-      display: grid;
-      grid-column: 1;
-      gap: 18px;
-    }
-
     .statement-head {
       display: flex;
       flex-wrap: wrap;
@@ -171,72 +165,11 @@
       line-height: 1.45;
     }
 
-    .sections {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      border-bottom: 1px solid var(--rule);
-    }
-
-    .section {
-      min-height: 220px;
-      padding: 18px;
-      border-right: 1px solid var(--rule);
-    }
-
-    .section:last-child {
-      border-right: 0;
-    }
-
-    .section h2,
     .signup h2 {
       margin: 0 0 24px;
       font-family: var(--font-meta);
       font-size: 15px;
       line-height: 1.3;
-      text-transform: uppercase;
-    }
-
-    .section p,
-    .section ul {
-      margin: 0;
-      color: var(--muted);
-      font-family: var(--font-meta);
-      font-size: 15px;
-      line-height: 1.45;
-    }
-
-    .section ul {
-      display: grid;
-      gap: 7px;
-      padding: 0;
-      list-style: none;
-    }
-
-    .section li::before {
-      content: "-> ";
-      color: var(--ink);
-    }
-
-    .notice {
-      display: grid;
-      grid-template-columns: minmax(260px, 0.8fr) minmax(320px, 1.2fr);
-      gap: 34px;
-      padding: 28px 0;
-      border-bottom: 1px solid var(--rule);
-    }
-
-    .notice-title {
-      display: grid;
-      gap: 18px;
-      align-content: start;
-    }
-
-    .notice h2 {
-      margin: 0;
-      font-family: var(--font-display);
-      font-size: clamp(28px, 5vw, 62px);
-      font-weight: 900;
-      line-height: 0.95;
       text-transform: uppercase;
     }
 
@@ -365,8 +298,7 @@
       }
 
       .top,
-      .intro,
-      .notice {
+      .intro {
         grid-template-columns: 1fr;
       }
 
@@ -375,16 +307,6 @@
         text-align: left;
       }
 
-      .sections {
-        grid-template-columns: 1fr;
-      }
-
-      .section,
-      .section:last-child {
-        min-height: 0;
-        border-right: 0;
-        border-bottom: 1px solid var(--rule);
-      }
     }
 
     @media (max-width: 560px) {
@@ -438,40 +360,6 @@
         </form>
       </div>
 
-      <div class="hero-copy">
-        <p class="copy">MCC is for theory that can be formalized, simulated, traced, or broken.</p>
-        <p class="copy">Capital simulation, source infrastructure, and dependency revelation are not topics. They are the work.</p>
-      </div>
-    </section>
-
-    <section class="notice">
-      <div class="notice-title">
-        <p class="kicker">First event info soon / NYC</p>
-        <h2>NYC.</h2>
-      </div>
-      <p class="copy">Marx Compute Club starts in New York. Event details and updates will go to the list first.</p>
-    </section>
-
-    <section class="sections" aria-label="Project areas">
-      <div class="section">
-        <h2>Work</h2>
-        <ul>
-          <li>productive subsumption</li>
-          <li>capital simulation</li>
-          <li>source infrastructure</li>
-          <li>dependency revelation</li>
-        </ul>
-      </div>
-
-      <div class="section">
-        <h2>Outputs</h2>
-        <ul>
-          <li>formalized theses</li>
-          <li>simulations and traces</li>
-          <li>source tools</li>
-          <li>diagrams / datasets / notes</li>
-        </ul>
-      </div>
     </section>
 
     <footer class="footer">
