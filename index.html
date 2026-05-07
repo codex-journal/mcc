@@ -176,10 +176,16 @@
 
     .notice {
       display: grid;
-      grid-template-columns: minmax(260px, 0.9fr) minmax(300px, 1.1fr);
-      gap: 24px;
+      grid-template-columns: minmax(260px, 0.8fr) minmax(320px, 1.2fr);
+      gap: 34px;
       padding: 28px 0;
       border-bottom: 1px solid var(--rule);
+    }
+
+    .notice-title {
+      display: grid;
+      gap: 18px;
+      align-content: start;
     }
 
     .notice h2 {
@@ -280,6 +286,7 @@
       min-height: 65px;
       overflow: visible;
       opacity: 1;
+      margin: 8px 0;
     }
 
     .footer {
@@ -394,11 +401,11 @@
     </section>
 
     <section class="notice">
-      <div>
-        <h2>First meeting TBD.</h2>
+      <div class="notice-title">
+        <p class="kicker">First meeting info soon / NYC</p>
+        <h2>First signal.</h2>
       </div>
       <div class="signup">
-        <h2>Announcements</h2>
         <p class="copy">Bring a thesis fragment, workflow, diagram, simulation idea, dataset, critique, or software artifact. The work leaves traces. Build the harness inside the work. Generalize what survives.</p>
         <form id="signup-form" action="/api/signup" method="post">
           <label for="email">Email</label>
@@ -430,6 +437,8 @@
     const turnstileToken = document.querySelector("#turnstile-token");
     let turnstileEnabled = false;
     let turnstileWidgetId = null;
+    let pendingTurnstileSubmit = false;
+    button.disabled = true;
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -437,11 +446,29 @@
       status.removeAttribute("data-state");
 
       if (turnstileEnabled && !turnstileToken.value) {
-        status.dataset.state = "error";
-        status.textContent = "Verification is still loading.";
+        pendingTurnstileSubmit = true;
+        button.disabled = true;
+        status.textContent = "Verification required.";
+        turnstileShell.dataset.interactive = "true";
+        try {
+          window.turnstile.execute(turnstileWidgetId);
+        } catch {
+          pendingTurnstileSubmit = false;
+          status.dataset.state = "error";
+          status.textContent = "Verification failed. Try again.";
+          button.disabled = false;
+        }
         return;
       }
 
+      await submitSignup();
+    });
+
+    setupTurnstile().finally(() => {
+      button.disabled = false;
+    });
+
+    async function submitSignup() {
       button.disabled = true;
 
       try {
@@ -463,9 +490,7 @@
         resetTurnstile();
         button.disabled = false;
       }
-    });
-
-    setupTurnstile();
+    }
 
     async function setupTurnstile() {
       const config = await fetchConfig();
@@ -473,7 +498,6 @@
         return;
       }
 
-      turnstileEnabled = true;
       turnstileShell.hidden = false;
       try {
         await loadTurnstile();
@@ -486,12 +510,17 @@
       turnstileWidgetId = window.turnstile.render("#turnstile-widget", {
         sitekey: config.turnstileSiteKey,
         theme: "light",
-        appearance: "interaction-only",
+        appearance: "execute",
+        execution: "execute",
         size: "flexible",
         "feedback-enabled": false,
-        callback: (token) => {
+        callback: async (token) => {
           turnstileToken.value = token;
           turnstileShell.removeAttribute("data-interactive");
+          if (pendingTurnstileSubmit) {
+            pendingTurnstileSubmit = false;
+            await submitSignup();
+          }
         },
         "before-interactive-callback": () => {
           turnstileShell.dataset.interactive = "true";
@@ -503,10 +532,15 @@
           turnstileToken.value = "";
         },
         "error-callback": () => {
+          pendingTurnstileSubmit = false;
           turnstileToken.value = "";
           turnstileShell.dataset.interactive = "true";
+          status.dataset.state = "error";
+          status.textContent = "Verification failed. Try again.";
+          button.disabled = false;
         }
       });
+      turnstileEnabled = true;
     }
 
     async function fetchConfig() {
@@ -538,7 +572,9 @@
     }
 
     function resetTurnstile() {
+      pendingTurnstileSubmit = false;
       turnstileToken.value = "";
+      turnstileShell.removeAttribute("data-interactive");
       if (window.turnstile && turnstileWidgetId !== null) {
         window.turnstile.reset(turnstileWidgetId);
       }
