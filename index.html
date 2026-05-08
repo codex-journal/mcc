@@ -160,6 +160,43 @@
       text-transform: uppercase;
     }
 
+    .source-marks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      align-items: center;
+      padding-top: 8px;
+    }
+
+    .source-mark {
+      display: block;
+      flex: 0 0 auto;
+    }
+
+    .source-mark-knots {
+      width: 76px;
+      height: 76px;
+      object-fit: contain;
+      opacity: 0.88;
+    }
+
+    .source-mark-codex {
+      width: 176px;
+      height: auto;
+      opacity: 0.82;
+    }
+
+    .source-mark-mcc {
+      width: 78px;
+      height: 78px;
+    }
+
+    .source-mark-mcc text {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-synthesis-weight: none;
+    }
+
     .copy {
       max-width: 58ch;
       margin: 0;
@@ -313,6 +350,20 @@
     }
 
     @media (max-width: 560px) {
+      .source-marks {
+        gap: 18px;
+      }
+
+      .source-mark-knots,
+      .source-mark-mcc {
+        width: 58px;
+        height: 58px;
+      }
+
+      .source-mark-codex {
+        width: 150px;
+      }
+
       form {
         grid-template-columns: 1fr;
       }
@@ -344,6 +395,19 @@
           <li>Source engineering.</li>
           <li>Dependency revelation.</li>
         </ul>
+        <div class="source-marks" aria-label="Source marks">
+          <img class="source-mark source-mark-knots" src="assets/marks/knots-mark.png" alt="Knots">
+          <img class="source-mark source-mark-codex" src="assets/marks/codex-journal-mark.png" alt="Codex Journal">
+          <svg class="source-mark source-mark-mcc" viewBox="0 0 64 64" aria-label="M-C-C" role="img">
+            <path d="M26 23 L18 39" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="square"/>
+            <path d="M38 23 L46 39" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="square"/>
+            <polygon fill="currentColor" points="16,43 17,34 24,39"/>
+            <polygon fill="currentColor" points="48,43 40,39 47,34"/>
+            <text x="32" y="21" text-anchor="middle" font-size="22">M</text>
+            <text x="17" y="58" text-anchor="middle" font-size="24">C</text>
+            <text x="47" y="58" text-anchor="middle" font-size="24">C</text>
+          </svg>
+        </div>
       </div>
 
       <div class="signup signup-primary">
