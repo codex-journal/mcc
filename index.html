@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light only">
   <title>Marx Compute Club</title>
   <meta name="description" content="A build club for theory, simulation, and source infrastructure in NYC.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -43,6 +44,7 @@
       --font-display: "MCC Display", "Adwaita Sans", Arial, Helvetica, sans-serif;
       --font-body: "MCC Mono", "Liberation Mono", "Courier New", monospace;
       --font-meta: "MCC Meta", "Adwaita Mono", "Liberation Mono", monospace;
+      color-scheme: only light;
     }
 
     * {
@@ -110,13 +112,18 @@
     .intro {
       display: grid;
       grid-template-columns: minmax(320px, 1fr) minmax(340px, 0.82fr);
-      gap: 34px;
+      grid-template-areas:
+        "statement signup"
+        "marks signup";
+      column-gap: 34px;
+      row-gap: 22px;
       align-items: start;
       padding: 42px 0;
       border-bottom: 1px solid var(--rule);
     }
 
     .statement {
+      grid-area: statement;
       display: grid;
       gap: 22px;
       align-content: start;
@@ -161,11 +168,11 @@
     }
 
     .source-marks {
+      grid-area: marks;
       display: flex;
       flex-wrap: wrap;
       gap: 24px;
       align-items: center;
-      padding-top: 8px;
     }
 
     .source-mark {
@@ -223,6 +230,7 @@
     }
 
     .signup {
+      grid-area: signup;
       display: grid;
       gap: 18px;
     }
@@ -351,6 +359,15 @@
         grid-template-columns: 1fr;
       }
 
+      .intro {
+        grid-template-areas:
+          "statement"
+          "signup"
+          "marks";
+        row-gap: 30px;
+        padding: 32px 0;
+      }
+
       .meta {
         justify-items: start;
         text-align: left;
@@ -404,11 +421,6 @@
           <li>Source engineering.</li>
           <li>Dependency revelation.</li>
         </ul>
-        <div class="source-marks" aria-label="Source marks">
-          <img class="source-mark source-mark-knots" src="assets/marks/knots-mark.png" alt="Knots">
-          <img class="source-mark source-mark-codex" src="assets/marks/codex-journal-mark.png" alt="Codex Journal">
-          <img class="source-mark source-mark-mcc" src="assets/marks/mcc-topology-mark.svg" alt="M-C-C">
-        </div>
       </div>
 
       <div class="signup signup-primary">
@@ -426,6 +438,12 @@
           <button type="submit">Sign up</button>
           <p class="form-status" id="signup-status" role="status" aria-live="polite"></p>
         </form>
+      </div>
+
+      <div class="source-marks" aria-label="Source marks">
+        <img class="source-mark source-mark-knots" src="assets/marks/knots-mark.png" alt="Knots">
+        <img class="source-mark source-mark-codex" src="assets/marks/codex-journal-mark.png" alt="Codex Journal">
+        <img class="source-mark source-mark-mcc" src="assets/marks/mcc-topology-mark.svg" alt="M-C-C">
       </div>
 
     </section>
