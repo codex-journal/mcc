@@ -180,6 +180,19 @@
       opacity: 0.88;
     }
 
+    @media (prefers-reduced-motion: no-preference) {
+      .source-mark-knots {
+        transform-origin: 50% 50%;
+        animation: knots-spin 72s linear infinite;
+      }
+
+      @keyframes knots-spin {
+        to {
+          transform: rotate(1turn);
+        }
+      }
+    }
+
     .source-mark-codex {
       width: 176px;
       height: auto;
