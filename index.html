@@ -178,6 +178,9 @@
     .source-mark {
       display: block;
       flex: 0 0 auto;
+      /* Keep transparent monochrome marks readable if a browser forces dark mode. */
+      filter: invert(1);
+      mix-blend-mode: difference;
     }
 
     .source-mark-knots {
