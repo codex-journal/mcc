@@ -23,16 +23,21 @@ export async function onRequestPost(context) {
   const source = sanitizeToken(payload.source || "site");
   const honeypot = String(payload.company || "").trim();
 
+  track(context, "signup_attempt", source);
+
   if (honeypot) {
+    track(context, "honeypot_hit", source);
     return json({ ok: true, message: "You are on the list." });
   }
 
   if (!EMAIL_PATTERN.test(email) || email.length > 320) {
+    track(context, "invalid_email", source);
     return json({ ok: false, error: "Enter a valid email." }, 400);
   }
 
   const turnstileResult = await verifyTurnstile(env, payload);
   if (!turnstileResult.ok) {
+    track(context, "turnstile_fail", source);
     return json({ ok: false, error: turnstileResult.error }, 400);
   }
 
@@ -82,14 +87,21 @@ export async function onRequestPost(context) {
   ]);
 
   if (!result.every((entry) => entry.success)) {
+    track(context, "signup_save_failed", source);
     return json({ ok: false, error: "Could not save signup." }, 500);
   }
+
+  track(context, "signup_saved", source);
 
   const sync = await syncResend(env, email, metadata);
   if (sync.status === "synced") {
     await markSynced(env.MCC_DB, email, sync.contactId || null);
+    track(context, "resend_sync_ok", source);
   } else if (sync.status === "failed") {
     await markSyncError(env.MCC_DB, email, sync.error);
+    track(context, "resend_sync_fail", source);
+  } else {
+    track(context, "resend_sync_skipped", source);
   }
 
   return json({
@@ -180,6 +192,30 @@ async function syncResend(env, email, metadata) {
   } catch (error) {
     return { status: "failed", error: error.message || "Resend sync failed." };
   }
+}
+
+function track(context, eventType, source) {
+  const promise = recordMetric(context.env?.MCC_DB, eventType, source).catch(() => {});
+  if (context.waitUntil) {
+    context.waitUntil(promise);
+  }
+}
+
+async function recordMetric(db, eventType, source) {
+  if (!db) {
+    return;
+  }
+
+  const now = new Date().toISOString();
+  const day = now.slice(0, 10);
+
+  await db.prepare(`
+    INSERT INTO signup_metric_rollups (day, event_type, source, count, updated_at)
+    VALUES (?, ?, ?, 1, ?)
+    ON CONFLICT(day, event_type, source) DO UPDATE SET
+      count = count + 1,
+      updated_at = excluded.updated_at
+  `).bind(day, sanitizeToken(eventType), sanitizeToken(source || "site"), now).run();
 }
 
 async function markSynced(db, email, contactId) {

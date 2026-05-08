@@ -6,6 +6,7 @@ This stack manages the Cloudflare pieces needed for the launch site:
 Cloudflare Pages project: marxcompute-club
 D1 database:              mcc-signups
 Turnstile widget:         MCC signup
+Web Analytics:            marxcompute.club, auto-installed at the edge
 custom domain:            www.marxcompute.club
 custom domain:            marxcompute.club
 DNS:                      www.marxcompute.club -> marxcompute-club.pages.dev
@@ -65,6 +66,7 @@ The account token should be scoped to:
 Account / Pages / Write      (shown as Edit in some Cloudflare UI)
 Account / D1 / Write         (shown as Edit in some Cloudflare UI)
 Account / Turnstile / Write  (shown as Edit in some Cloudflare UI)
+Account Settings / Write     (needed for Web Analytics/RUM site config)
 ```
 
 The zone token should be scoped to:
