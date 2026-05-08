@@ -178,9 +178,6 @@
     .source-mark {
       display: block;
       flex: 0 0 auto;
-      /* Keep transparent monochrome marks readable if a browser forces dark mode. */
-      filter: invert(1);
-      mix-blend-mode: difference;
     }
 
     .source-mark-knots {
@@ -188,6 +185,9 @@
       height: 76px;
       object-fit: contain;
       opacity: 0.88;
+      /* Keep transparent monochrome marks readable if a browser forces dark mode. */
+      filter: invert(1);
+      mix-blend-mode: difference;
     }
 
     @media (prefers-reduced-motion: no-preference) {
@@ -207,6 +207,9 @@
       width: 176px;
       height: auto;
       opacity: 0.82;
+      /* Keep transparent monochrome marks readable if a browser forces dark mode. */
+      filter: invert(1);
+      mix-blend-mode: difference;
     }
 
     .source-mark-mcc {
