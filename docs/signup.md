@@ -31,6 +31,12 @@ Open `http://127.0.0.1:8788` and submit the form to test it in-browser.
 wrangler d1 execute mcc-signups --local --config wrangler.local.jsonc --command "SELECT email, status, source, resend_synced_at, sync_error FROM subscribers ORDER BY updated_at DESC LIMIT 10"
 ```
 
+Inspect aggregate signup counters:
+
+```bash
+wrangler d1 execute mcc-signups --local --config wrangler.local.jsonc --command "SELECT day, event_type, source, count FROM signup_metric_rollups ORDER BY day DESC, event_type, source"
+```
+
 ## Remote Migration
 
 Production D1 is configured in `wrangler.jsonc`:
@@ -137,6 +143,26 @@ sync_error
 
 Do not treat Resend as canonical. Resend is the delivery layer; D1 is the owned
 list.
+
+## Aggregate Signup Metrics
+
+The signup function updates `signup_metric_rollups` through `context.waitUntil`.
+These counters are for operational health, not attribution:
+
+```text
+signup_attempt
+honeypot_hit
+invalid_email
+turnstile_fail
+signup_saved
+signup_save_failed
+resend_sync_ok
+resend_sync_fail
+resend_sync_skipped
+```
+
+The rollup key is `day`, `event_type`, and sanitized `source`. It does not store
+IP addresses, full user-agent strings, or visitor IDs.
 
 ## Production Verification
 
