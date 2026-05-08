@@ -1,10 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <style>
+      .mcc-letter { font-family: "Adwaita Sans", "Liberation Sans", Arial, Helvetica, sans-serif; font-weight: 900; }
+    </style>
+  </defs>
   <rect width="64" height="64" fill="#f5f1e7"/>
   <path d="M26 23 L18 39" fill="none" stroke="#0b0b0a" stroke-width="4" stroke-linecap="square"/>
   <path d="M38 23 L46 39" fill="none" stroke="#0b0b0a" stroke-width="4" stroke-linecap="square"/>
   <polygon fill="#0b0b0a" points="16,43 17,34 24,39"/>
   <polygon fill="#0b0b0a" points="48,43 40,39 47,34"/>
-  <text x="32" y="21" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="900" fill="#0b0b0a">M</text>
-  <text x="17" y="58" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="900" fill="#0b0b0a">C</text>
-  <text x="47" y="58" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="900" fill="#0b0b0a">C</text>
+  <text class="mcc-letter" x="32" y="21" text-anchor="middle" font-size="22" fill="#0b0b0a">M</text>
+  <text class="mcc-letter" x="17" y="58" text-anchor="middle" font-size="24" fill="#0b0b0a">C</text>
+  <text class="mcc-letter" x="47" y="58" text-anchor="middle" font-size="24" fill="#0b0b0a">C</text>
 </svg>

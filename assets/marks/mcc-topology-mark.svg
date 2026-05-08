@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <defs>
+    <style>
+      .mcc-letter { font-family: "Adwaita Sans", "Liberation Sans", Arial, Helvetica, sans-serif; font-weight: 900; }
+    </style>
+  </defs>
+  <rect width="1080" height="1080" fill="#f5f1e7"/>
+  <text class="mcc-letter" x="540" y="318" text-anchor="middle" font-size="300" fill="#0b0b0a">M</text>
+  <g transform="translate(0 20)">
+    <g fill="none" stroke="#0b0b0a" stroke-width="48" stroke-linecap="square">
+      <path d="M452 370 L385 514"/>
+      <path d="M628 370 L695 514"/>
+    </g>
+    <polygon fill="#0b0b0a" points="350,592 342,489 433,532"/>
+    <polygon fill="#0b0b0a" points="730,592 647,532 738,489"/>
+  </g>
+  <text class="mcc-letter" x="312" y="862" text-anchor="middle" font-size="320" fill="#0b0b0a">C</text>
+  <text class="mcc-letter" x="768" y="862" text-anchor="middle" font-size="320" fill="#0b0b0a">C</text>
+</svg>
