@@ -178,16 +178,6 @@ resource "cloudflare_pages_domain" "apex" {
   name         = local.domain
 }
 
-resource "cloudflare_web_analytics_site" "mcc_site" {
-  provider     = cloudflare.account
-  account_id   = var.cloudflare_account_id
-  host         = local.domain
-  zone_tag     = var.cloudflare_zone_id
-  auto_install = true
-  enabled      = true
-  lite         = true
-}
-
 resource "cloudflare_dns_record" "www_site" {
   provider = cloudflare.zone
   zone_id  = var.cloudflare_zone_id
@@ -346,14 +336,6 @@ output "turnstile" {
   value = {
     name    = cloudflare_turnstile_widget.signup.name
     sitekey = cloudflare_turnstile_widget.signup.sitekey
-  }
-}
-
-output "web_analytics" {
-  value = {
-    host         = cloudflare_web_analytics_site.mcc_site.host
-    auto_install = cloudflare_web_analytics_site.mcc_site.auto_install
-    eu_lite      = cloudflare_web_analytics_site.mcc_site.lite
   }
 }
 

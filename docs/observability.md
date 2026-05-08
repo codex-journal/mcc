@@ -5,20 +5,20 @@ visitor profiling.
 
 ## Site Traffic
 
-Cloudflare Web Analytics is managed in `infra/dns/main.tf` with
-`cloudflare_web_analytics_site.mcc_site`.
+Cloudflare Web Analytics is enabled for `marxcompute.club` with Cloudflare's
+automatic setup. It is intentionally dashboard-managed for now, not declared in
+OpenTofu. If MCC needs tighter IaC later, import the existing site instead of
+creating a second Web Analytics site.
 
-The site is configured with:
+The current dashboard setup is:
 
 ```text
 host:         marxcompute.club
 auto_install: true
-lite:         true
 ```
 
 `auto_install` lets Cloudflare inject the Web Analytics beacon at the edge for
 the proxied site, so the HTML does not contain a committed analytics token.
-`lite` disables beacon injection for visitors from the EU.
 
 Cloudflare Web Analytics should be treated as aggregate site telemetry:
 
