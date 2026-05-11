@@ -10,6 +10,7 @@ custom domain:            www.marxcompute.club
 custom domain:            marxcompute.club
 DNS:                      www.marxcompute.club -> marxcompute-club.pages.dev
 DNS:                      marxcompute.club -> marxcompute-club.pages.dev
+DNS:                      id.marxcompute.club -> id-01 Tailscale IPv4
 Mail DNS:                 Migadu MX/SPF/DKIM/DMARC
 ```
 
@@ -18,6 +19,11 @@ and uses a proxied apex `CNAME` record to the Pages project. Cloudflare flattens
 the apex CNAME at the edge. This keeps typed apex URLs working now without
 redirect rules, and keeps a clean future migration path: remove the Pages custom
 domain and replace the apex DNS record with the VPS address.
+
+`id.marxcompute.club` is intentionally DNS-only and points at the Tailscale IPv4
+for `id-01`. Public clients will resolve the name but cannot route to it unless
+they are on the tailnet. MCX uses DNS-01 ACME for this name so Pocket ID can use
+the final HTTPS origin before the identity service has a public edge.
 
 ## Apply
 
