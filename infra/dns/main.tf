@@ -57,6 +57,12 @@ variable "id_01_tailnet_ipv4" {
   default     = "100.72.231.12"
 }
 
+variable "mcx_01_tailnet_ipv4" {
+  description = "Tailscale IPv4 for mcx-01. DNS-only; public clients cannot reach it without the tailnet."
+  type        = string
+  default     = "100.101.171.110"
+}
+
 variable "migadu_dns_verification" {
   description = "Optional Migadu root TXT verification value from the Migadu domain records API."
   type        = string
@@ -217,6 +223,17 @@ resource "cloudflare_dns_record" "id_tailnet" {
   comment  = "Managed by OpenTofu: id-01 tailnet-only HTTPS origin"
 }
 
+resource "cloudflare_dns_record" "chat_tailnet" {
+  provider = cloudflare.zone
+  zone_id  = var.cloudflare_zone_id
+  name     = "chat.${local.domain}"
+  type     = "A"
+  content  = var.mcx_01_tailnet_ipv4
+  ttl      = 1
+  proxied  = false
+  comment  = "Managed by OpenTofu: mcx-01 tailnet-only MCChat origin"
+}
+
 resource "cloudflare_dns_record" "migadu_mx_primary" {
   provider = cloudflare.zone
   zone_id  = var.cloudflare_zone_id
@@ -347,6 +364,15 @@ output "id_tailnet" {
     type    = cloudflare_dns_record.id_tailnet.type
     content = cloudflare_dns_record.id_tailnet.content
     proxied = cloudflare_dns_record.id_tailnet.proxied
+  }
+}
+
+output "chat_tailnet" {
+  value = {
+    name    = cloudflare_dns_record.chat_tailnet.name
+    type    = cloudflare_dns_record.chat_tailnet.type
+    content = cloudflare_dns_record.chat_tailnet.content
+    proxied = cloudflare_dns_record.chat_tailnet.proxied
   }
 }
 
