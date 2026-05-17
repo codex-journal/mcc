@@ -27,9 +27,35 @@ cannot route to them unless they are on the tailnet. MCX uses DNS-01 ACME for
 these names so services can use final HTTPS origins before they have a public
 edge.
 
+## DNS-Only OpenTofu
+
+Use the DNS-only flake app for OpenTofu work on this stack. It does not pull the
+site/browser tooling from the default development shell:
+
+```bash
+nix run .#dns-tofu -- plan
+nix develop .#dns
+```
+
+For brokered local use, inject the Cloudflare token only into the child process:
+
+```bash
+with-secret cloudflare-mcx nix run .#dns-tofu -- plan
+```
+
+`mcc-dns-tofu` runs `tofu -chdir=infra/dns` from the repository root. If
+`CLOUDFLARE_DNS_API_TOKEN` or `CLOUDFLARE_API_TOKEN` is present, it maps that
+value into `TF_VAR_cloudflare_zone_api_token` and
+`TF_VAR_cloudflare_account_api_token` unless those variables are already set.
+No token is printed or written to disk by the wrapper.
+
+Do not run `apply` from legacy local `terraform.tfstate` while the control-plane
+remote state backend is being established. Use the remote-backed workflow once
+it is ready.
+
 ## Apply
 
-Provide secrets out of band.
+Provide secrets out of band. Prefer the brokered command above.
 
 If Cloudflare lets you create one token with both account and zone policies, you
 can keep using `CLOUDFLARE_API_TOKEN`:
@@ -60,11 +86,9 @@ curl -sS https://api.cloudflare.com/client/v4/accounts \
 Then:
 
 ```bash
-nix develop
-cd infra/dns
-tofu init
-tofu plan
-tofu apply
+nix run .#dns-tofu -- init
+nix run .#dns-tofu -- plan
+nix run .#dns-tofu -- apply
 ```
 
 The account token should be scoped to:
