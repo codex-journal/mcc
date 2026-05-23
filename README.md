@@ -27,6 +27,19 @@ node scripts/test-signup.mjs
 See `docs/signup.md` for provider sync and D1 notes.
 See `docs/email.md` for Migadu mailbox setup.
 
+## License
+
+Code in this repository is licensed under the GNU Affero General Public License
+v3.0 or later. See `LICENSE`.
+
+Textual site content, posts, event copy, and documentation are licensed under
+Creative Commons Attribution-ShareAlike 4.0 International unless otherwise
+noted. See `LICENSES/CC-BY-SA-4.0.txt`.
+
+MCC names, marks, and logos are identity assets. This repository does not grant
+trademark rights or permission to imply endorsement, affiliation, or official
+status for unrelated projects.
+
 ## Build
 
 Cloudflare Pages deploys the static assets from `dist` and uploads Pages
