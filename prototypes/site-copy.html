@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light only">
+  <title>MCC Site Copy Prototype</title>
+  <style>
+    @font-face {
+      font-family: "MCC Display";
+      src: url("../assets/fonts/AdwaitaSans-Regular.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "MCC Mono";
+      src: url("../assets/fonts/LiberationMono-Bold.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "MCC Meta";
+      src: url("../assets/fonts/AdwaitaMono-Bold.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    :root {
+      --paper: #f5f1e7;
+      --ink: #0b0b0a;
+      --muted: #666155;
+      --rule: #171713;
+      --red: #9d1414;
+      --blue: #2f4e58;
+      --tan: #9c7749;
+      --amber: #d8bd82;
+      --pale: rgba(255, 255, 255, 0.18);
+      --font-display: "MCC Display", "Adwaita Sans", Arial, Helvetica, sans-serif;
+      --font-body: "MCC Mono", "Liberation Mono", "Courier New", monospace;
+      --font-meta: "MCC Meta", "Adwaita Mono", "Liberation Mono", monospace;
+      color-scheme: only light;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 16% 0%, rgba(216, 189, 130, 0.46), transparent 42%),
+        linear-gradient(116deg, var(--paper) 0%, var(--paper) 62%, rgba(47, 78, 88, 0.12) 100%);
+      color: var(--ink);
+      font-family: var(--font-body);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    main {
+      width: min(1220px, 100%);
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .prototype-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 14px;
+      color: var(--muted);
+      font-family: var(--font-meta);
+      font-size: 13px;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    .variant-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .variant-controls button {
+      min-height: 34px;
+      border: 1px solid rgba(23, 23, 19, 0.48);
+      background: transparent;
+      color: var(--muted);
+      padding: 0 10px;
+      font-family: var(--font-meta);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .variant-controls button[aria-pressed="true"] {
+      border-color: var(--rule);
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      padding: 26px 0 16px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .name {
+      max-width: 8ch;
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(48px, 10vw, 132px);
+      font-weight: 900;
+      line-height: 0.86;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .meta {
+      display: grid;
+      gap: 8px;
+      justify-items: end;
+      color: var(--muted);
+      font-family: var(--font-meta);
+      font-size: 13px;
+      line-height: 1.35;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) minmax(340px, 0.82fr);
+      grid-template-areas:
+        "statement signup"
+        "surfaces signup"
+        "marks marks";
+      column-gap: 34px;
+      row-gap: 26px;
+      align-items: start;
+      padding: 42px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .statement {
+      grid-area: statement;
+      display: grid;
+      gap: 22px;
+      align-content: start;
+    }
+
+    .kicker {
+      margin: 0;
+      color: var(--red);
+      font-family: var(--font-meta);
+      font-size: 14px;
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+
+    .proposition {
+      max-width: 36ch;
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: clamp(18px, 2.4vw, 30px);
+      font-weight: 700;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    .support {
+      max-width: 57ch;
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: clamp(15px, 1.7vw, 19px);
+      line-height: 1.45;
+    }
+
+    .vector-list,
+    .surface-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-meta);
+      font-size: clamp(15px, 1.5vw, 19px);
+      line-height: 1.28;
+      list-style: none;
+      text-transform: uppercase;
+    }
+
+    .surface-list {
+      grid-area: surfaces;
+      border-top: 1px solid rgba(23, 23, 19, 0.62);
+      padding-top: 18px;
+    }
+
+    .surface-list li {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      border-bottom: 1px solid rgba(23, 23, 19, 0.24);
+      padding-bottom: 8px;
+    }
+
+    .surface-list span {
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .signup {
+      grid-area: signup;
+      display: grid;
+      gap: 18px;
+      border: 1px solid var(--rule);
+      padding: 18px;
+      align-content: start;
+      background: var(--pale);
+    }
+
+    .signup h2 {
+      margin: 0;
+      color: var(--red);
+      font-family: var(--font-meta);
+      font-size: clamp(18px, 2.2vw, 28px);
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+
+    .signup p {
+      margin: 0;
+      font-size: clamp(15px, 1.8vw, 20px);
+      line-height: 1.42;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+    }
+
+    label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    input,
+    .signup button {
+      min-height: 48px;
+      border: 1px solid var(--ink);
+      border-radius: 0;
+      background: transparent;
+      color: var(--ink);
+      font: 700 16px/1 var(--font-meta);
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    input {
+      min-width: 0;
+      padding: 0 14px;
+    }
+
+    .signup button {
+      padding: 0 18px;
+    }
+
+    .source-marks {
+      grid-area: marks;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      align-items: center;
+      border-top: 1px solid rgba(23, 23, 19, 0.42);
+      padding-top: 20px;
+    }
+
+    .source-mark {
+      display: block;
+      flex: 0 0 auto;
+    }
+
+    .source-mark-knots {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      filter: invert(1);
+      mix-blend-mode: difference;
+      opacity: 0.86;
+    }
+
+    .source-mark-codex {
+      width: 168px;
+      height: auto;
+      filter: invert(1);
+      mix-blend-mode: difference;
+      opacity: 0.78;
+    }
+
+    .source-mark-mcc {
+      width: 102px;
+      height: 102px;
+      object-fit: contain;
+      opacity: 0.94;
+    }
+
+    .copy-matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      padding: 30px 0 0;
+    }
+
+    .candidate {
+      border-top: 1px solid var(--rule);
+      padding-top: 12px;
+    }
+
+    .candidate h3 {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-family: var(--font-meta);
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .candidate .candidate-kicker,
+    .candidate .candidate-cta {
+      color: var(--red);
+      font-family: var(--font-meta);
+      font-size: 12px;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    .candidate p {
+      margin: 0 0 10px;
+      font-size: 14px;
+      line-height: 1.42;
+    }
+
+    .candidate .candidate-proposition {
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .candidate .candidate-support {
+      color: var(--muted);
+    }
+
+    .footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      padding-top: 16px;
+      color: var(--muted);
+      font-family: var(--font-meta);
+      font-size: 13px;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 780px) {
+      main { padding: 18px; }
+
+      .top,
+      .intro {
+        grid-template-columns: 1fr;
+      }
+
+      .intro {
+        grid-template-areas:
+          "statement"
+          "signup"
+          "surfaces"
+          "marks";
+        row-gap: 30px;
+        padding: 32px 0;
+      }
+
+      .meta {
+        justify-items: start;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 560px) {
+      form { grid-template-columns: 1fr; }
+      .signup button { width: 100%; }
+      .surface-list li { grid-template-columns: 1fr; }
+      .surface-list span { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="prototype-bar">
+      <span>Site copy prototype / not deploy target</span>
+      <div class="variant-controls" aria-label="Copy candidates"></div>
+    </div>
+
+    <header class="top">
+      <h1 class="name">Marx Compute Club</h1>
+      <div class="meta">
+        <span>M-C-C</span>
+        <span>NYC</span>
+      </div>
+    </header>
+
+    <section class="intro">
+      <div class="statement">
+        <p class="kicker" data-field="kicker"></p>
+        <p class="proposition" data-field="proposition"></p>
+        <p class="support" data-field="support"></p>
+        <ul class="vector-list" data-field="vectors" aria-label="MCC vectors"></ul>
+      </div>
+
+      <div class="signup">
+        <h2 data-field="ctaTitle"></h2>
+        <p data-field="ctaCopy"></p>
+        <form action="/api/signup" method="post">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="email" autocomplete="email">
+          <button type="submit">Sign up</button>
+        </form>
+      </div>
+
+      <ul class="surface-list" data-field="surfaces" aria-label="MCC surfaces"></ul>
+
+      <div class="source-marks" aria-label="Source marks">
+        <img class="source-mark source-mark-knots" src="../assets/marks/knots-mark.png" alt="Knots">
+        <img class="source-mark source-mark-codex" src="../assets/marks/codex-journal-mark.png" alt="Codex Journal">
+        <img class="source-mark source-mark-mcc" src="../assets/marks/mcc-topology-mark.svg" alt="M-C-C">
+      </div>
+    </section>
+
+    <section class="copy-matrix" aria-label="Candidate copy matrix"></section>
+
+    <footer class="footer">
+      <span>marxcompute.club</span>
+      <span><a href="mailto:source@marxcompute.club">source@marxcompute.club</a></span>
+      <span>M-C-M' / M-C-C</span>
+    </footer>
+  </main>
+
+  <script>
+    const sharedSurfaces = [
+      ["id.marxcompute.club", "identity / accounts"],
+      ["git.marxcompute.club", "source / forge"],
+      ["chat.marxcompute.club", "rooms / coordination"],
+      ["marxcompute.club", "updates / signup"]
+    ];
+
+    const candidates = [
+      {
+        id: "theoretical-production",
+        label: "Theoretical Production",
+        kicker: "Theory / simulation / infrastructure",
+        proposition: "A build club for the infrastructure of theoretical production.",
+        support: "MCC is opening accounts, source, and chat so the work can move from statement into shared machinery.",
+        vectors: [
+          "Productive subsumption.",
+          "Source engineering.",
+          "Dependency revelation."
+        ],
+        surfaces: sharedSurfaces,
+        ctaTitle: "Sign up for access.",
+        ctaCopy: "Invitation links can be expected this week."
+      },
+      {
+        id: "coming-online",
+        label: "Coming Online",
+        kicker: "Theory / simulation / infrastructure",
+        proposition: "MCC infrastructure is coming online.",
+        support: "Accounts, source, and chat are opening for Marx Compute Club. Sign up with email to receive an invitation link this week.",
+        vectors: [
+          "Productive subsumption.",
+          "Source engineering.",
+          "Dependency revelation."
+        ],
+        surfaces: sharedSurfaces,
+        ctaTitle: "Sign up for access.",
+        ctaCopy: "Invitation links can be expected this week."
+      },
+      {
+        id: "requires",
+        label: "Requires",
+        kicker: "Theory / simulation / infrastructure",
+        proposition: "Build the infrastructure theory now requires.",
+        support: "Theory after the model needs a stack: identity, source, chat, simulations, archives, and the dependency graph that makes the work reproducible.",
+        vectors: [
+          "Productive subsumption.",
+          "Source engineering.",
+          "Dependency revelation."
+        ],
+        surfaces: sharedSurfaces,
+        ctaTitle: "Enter the first build.",
+        ctaCopy: "Sign up with email. Invitation links go out this week."
+      },
+      {
+        id: "working-surface",
+        label: "Working Surface",
+        kicker: "Source / coordination / archive",
+        proposition: "A working surface for theory, simulation, and infrastructure.",
+        support: "MCC is putting the tools in public enough to be used, stressed, forked, repaired, and argued through.",
+        vectors: [
+          "Build the stack.",
+          "Publish the source.",
+          "Expose the dependency graph."
+        ],
+        surfaces: sharedSurfaces,
+        ctaTitle: "Get the invitation link.",
+        ctaCopy: "Sign up for the first infrastructure opening."
+      },
+      {
+        id: "platform-explains",
+        label: "Platform Explains",
+        kicker: "Topology / dependency / obligation",
+        proposition: "The platform has to explain itself.",
+        support: "MCC is being built as an inspectable topology: identity, source, chat, provider dependencies, and the obligations that hold the system together.",
+        vectors: [
+          "Topology is the platform.",
+          "Topology can obscure dependency.",
+          "Dependency becomes obligation."
+        ],
+        surfaces: [
+          ["topology", "deployment"],
+          ["dependency", "reproduction"],
+          ["source", "public handle"],
+          ["providers", "control gradient"]
+        ],
+        ctaTitle: "Sign up for the opening.",
+        ctaCopy: "Email invitations for MCC infrastructure can be expected this week."
+      },
+      {
+        id: "legitimacy",
+        label: "Legitimacy",
+        kicker: "Legitimacy / source / machinery",
+        proposition: "Build legitimacy where the work is produced.",
+        support: "The point is not to borrow institutional permission. MCC is building shared machinery where artifacts can become legible through source, use, and public obligation.",
+        vectors: [
+          "Legitimacy from below.",
+          "Tools from above.",
+          "Artifacts in public."
+        ],
+        surfaces: sharedSurfaces,
+        ctaTitle: "Sign up for access.",
+        ctaCopy: "Invitation links go out this week."
+      },
+      {
+        id: "source-starts",
+        label: "Source Starts",
+        kicker: "Source / legitimacy / public work",
+        proposition: "Source is where legitimacy starts.",
+        support: "The point is not another group chat. MCC is building a source surface where theory, computation, infrastructure, and public obligation can stress each other.",
+        vectors: [
+          "Source gives dependency a public handle.",
+          "Free software is not enough.",
+          "The political begins in obligation."
+        ],
+        surfaces: [
+          ["git", "artifacts"],
+          ["chat", "coordination"],
+          ["events", "work pressure"],
+          ["archive", "memory"]
+        ],
+        ctaTitle: "Receive an invitation link.",
+        ctaCopy: "Sign up with email at marxcompute.club."
+      },
+      {
+        id: "control",
+        label: "Gradient",
+        kicker: "Control gradient / rented compute / source",
+        proposition: "Autonomy is a control gradient.",
+        support: "MCC begins from rented and managed infrastructure, exposes those dependencies, and builds toward deeper control by making the stack inspectable.",
+        vectors: [
+          "Hetzner / Cloudflare / Resend / Migadu.",
+          "Nix / Forgejo / MCChat.",
+          "Expose where control is missing."
+        ],
+        surfaces: [
+          ["compute", "rented"],
+          ["edge / dns", "managed"],
+          ["email", "deliverability"],
+          ["source", "portable"]
+        ],
+        ctaTitle: "Sign up for updates.",
+        ctaCopy: "Invitation links can be expected this week."
+      },
+      {
+        id: "accounts-source-chat",
+        label: "Accounts Source Chat",
+        kicker: "id / git / chat",
+        proposition: "Accounts, source, and chat are opening this week.",
+        support: "Marx Compute Club is moving from announcement into infrastructure. Sign up to receive an invitation link.",
+        vectors: [
+          "id.marxcompute.club",
+          "git.marxcompute.club",
+          "chat.marxcompute.club"
+        ],
+        surfaces: sharedSurfaces,
+        ctaTitle: "Sign up.",
+        ctaCopy: "Email invitations this week."
+      },
+      {
+        id: "theory-needs-rooms",
+        label: "Needs Rooms",
+        kicker: "Theory / rooms / source",
+        proposition: "Theory needs rooms, source, and machines.",
+        support: "MCC is building the place where concepts, simulations, code, and infrastructure can pressure each other until something works.",
+        vectors: [
+          "Theory commands feedback.",
+          "Source records the work.",
+          "Infrastructure carries the obligation."
+        ],
+        surfaces: sharedSurfaces,
+        ctaTitle: "Join the first opening.",
+        ctaCopy: "Sign up with email for an invitation link."
+      },
+      {
+        id: "source-conditions",
+        label: "Source Conditions",
+        kicker: "Theory / production / conditions",
+        proposition: "Source the conditions of theory.",
+        support: "MCC treats theory as production with infrastructure, dependencies, tools, rooms, archives, and maintenance obligations.",
+        vectors: [
+          "Productive subsumption.",
+          "Source engineering.",
+          "Dependency revelation."
+        ],
+        surfaces: sharedSurfaces,
+        ctaTitle: "Sign up for updates.",
+        ctaCopy: "Invitation links can be expected this week."
+      },
+      {
+        id: "after-model",
+        label: "After The Model",
+        kicker: "Model-mediated production / source",
+        proposition: "Theory after the model needs a stack.",
+        support: "Model-mediated work accelerates production. MCC is building the source, coordination, and dependency surfaces that make that acceleration legible.",
+        vectors: [
+          "The harness shapes thought.",
+          "Theory commands feedback.",
+          "Harness theory."
+        ],
+        surfaces: sharedSurfaces,
+        ctaTitle: "Get an invitation link.",
+        ctaCopy: "Sign up with email. Access opens this week."
+      },
+      {
+        id: "plain",
+        label: "Plain",
+        kicker: "Marx Compute Club / NYC",
+        proposition: "A build club for theory, simulation, and infrastructure.",
+        support: "MCC infrastructure is opening this week. Sign up with email to receive an invitation link.",
+        vectors: [
+          "Accounts.",
+          "Source.",
+          "Chat."
+        ],
+        surfaces: sharedSurfaces,
+        ctaTitle: "Sign up.",
+        ctaCopy: "Invitation links this week."
+      }
+    ];
+
+    const fields = {
+      kicker: document.querySelector('[data-field="kicker"]'),
+      proposition: document.querySelector('[data-field="proposition"]'),
+      support: document.querySelector('[data-field="support"]'),
+      vectors: document.querySelector('[data-field="vectors"]'),
+      surfaces: document.querySelector('[data-field="surfaces"]'),
+      ctaTitle: document.querySelector('[data-field="ctaTitle"]'),
+      ctaCopy: document.querySelector('[data-field="ctaCopy"]')
+    };
+    const controls = document.querySelector(".variant-controls");
+    const matrix = document.querySelector(".copy-matrix");
+
+    for (const candidate of candidates) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = candidate.label;
+      button.dataset.variant = candidate.id;
+      button.addEventListener("click", () => render(candidate.id));
+      controls.append(button);
+
+      const card = document.createElement("article");
+      card.className = "candidate";
+      card.innerHTML = `
+        <h3>${candidate.label}</h3>
+        <p class="candidate-kicker">${candidate.kicker}</p>
+        <p class="candidate-proposition">${candidate.proposition}</p>
+        <p class="candidate-support">${candidate.support}</p>
+        <p class="candidate-cta">${candidate.ctaTitle} ${candidate.ctaCopy}</p>
+      `;
+      matrix.append(card);
+    }
+
+    function render(id) {
+      const candidate = candidates.find((item) => item.id === id) || candidates[0];
+      fields.kicker.textContent = candidate.kicker;
+      fields.proposition.textContent = candidate.proposition;
+      fields.support.textContent = candidate.support;
+      fields.ctaTitle.textContent = candidate.ctaTitle;
+      fields.ctaCopy.textContent = candidate.ctaCopy;
+      fields.vectors.replaceChildren(...candidate.vectors.map((text) => {
+        const item = document.createElement("li");
+        item.textContent = text;
+        return item;
+      }));
+      fields.surfaces.replaceChildren(...candidate.surfaces.map(([name, role]) => {
+        const item = document.createElement("li");
+        const primary = document.createElement("strong");
+        const secondary = document.createElement("span");
+        primary.textContent = name;
+        secondary.textContent = role;
+        item.append(primary, secondary);
+        return item;
+      }));
+      for (const button of controls.querySelectorAll("button")) {
+        button.setAttribute("aria-pressed", button.dataset.variant === candidate.id ? "true" : "false");
+      }
+    }
+
+    render("theoretical-production");
+  </script>
+</body>
+</html>

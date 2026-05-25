@@ -8,6 +8,11 @@ Static site scaffold for marxcompute.club.
 nix develop
 ```
 
+## Prototypes
+
+`prototypes/site-copy.html` is a standalone local page for comparing homepage
+copy candidates. It is not deployed by `scripts/build-site`.
+
 ## Signup Flow
 
 The homepage includes a minimal announcement signup form. Local signup testing
