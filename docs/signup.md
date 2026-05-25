@@ -37,6 +37,35 @@ Inspect aggregate signup counters:
 wrangler d1 execute mcc-signups --local --config wrangler.local.jsonc --command "SELECT day, event_type, source, count FROM signup_metric_rollups ORDER BY day DESC, event_type, source"
 ```
 
+For a cleaner operator view, use:
+
+```bash
+scripts/d1-signups --local
+```
+
+## Inspect Remote D1
+
+Remote signup inspection uses Wrangler and the production D1 binding from
+`wrangler.jsonc`:
+
+```bash
+scripts/d1-signups
+scripts/d1-signups --limit 100
+scripts/d1-signups --json
+```
+
+By default this prints status/source counts, recent subscriber rows, and recent
+aggregate signup metrics. It does not select or print `page_referrer` or
+`user_agent`.
+
+Remote usage requires actual Cloudflare credentials with access to the MCC
+account and the `mcc-signups` D1 database. A Wrangler login,
+`CLOUDFLARE_API_TOKEN`, or the local secret broker can provide those credentials.
+If `CLOUDFLARE_ACCOUNT_ID` is not set but `TF_VAR_cloudflare_account_id` is
+available, the script exports it for Wrangler. If `CLOUDFLARE_API_TOKEN` is not
+set but `TF_VAR_cloudflare_account_api_token` is available, it exports that
+account token for Wrangler.
+
 ## Remote Migration
 
 Production D1 is configured in `wrangler.jsonc`:

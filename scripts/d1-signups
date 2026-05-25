@@ -1,0 +1,214 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+database="mcc-signups"
+config="wrangler.jsonc"
+mode="remote"
+limit="50"
+format="table"
+show_metrics="1"
+
+usage() {
+  cat <<'USAGE'
+Usage: scripts/d1-signups [options]
+
+Neatly inspect MCC signup rows in Cloudflare D1.
+
+Options:
+  --local              Query local D1 with wrangler.local.jsonc.
+  --remote             Query remote D1 with wrangler.jsonc. Default.
+  --limit N            Number of recent subscribers to show. Default: 50.
+  --json               Print recent subscriber rows as JSON.
+  --no-metrics         Omit signup_metric_rollups output.
+  -h, --help           Show this help.
+
+Remote usage requires real Cloudflare credentials with access to the MCC account
+and the mcc-signups D1 database. A Wrangler login, CLOUDFLARE_API_TOKEN, or the
+local secret broker can provide those credentials. If CLOUDFLARE_ACCOUNT_ID is
+not set but TF_VAR_cloudflare_account_id is available, the script exports it for
+Wrangler. If CLOUDFLARE_API_TOKEN is not set but
+TF_VAR_cloudflare_account_api_token is available, the script exports it for
+Wrangler.
+USAGE
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --local)
+      mode="local"
+      config="wrangler.local.jsonc"
+      ;;
+    --remote)
+      mode="remote"
+      config="wrangler.jsonc"
+      ;;
+    --limit)
+      shift
+      if [ "$#" -eq 0 ]; then
+        echo "--limit requires a number" >&2
+        exit 64
+      fi
+      limit="$1"
+      ;;
+    --json)
+      format="json"
+      ;;
+    --no-metrics)
+      show_metrics="0"
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "unknown option: $1" >&2
+      usage >&2
+      exit 64
+      ;;
+  esac
+  shift
+done
+
+case "$limit" in
+  ''|*[!0-9]*)
+    echo "--limit must be a non-negative integer" >&2
+    exit 64
+    ;;
+esac
+
+repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$repo_root"
+
+if ! command -v wrangler >/dev/null 2>&1; then
+  echo "wrangler not found. Run inside nix develop or install Wrangler." >&2
+  exit 69
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "jq not found. Run inside nix develop or install jq." >&2
+  exit 69
+fi
+
+if ! command -v column >/dev/null 2>&1; then
+  echo "column not found. Run inside nix develop or install util-linux." >&2
+  exit 69
+fi
+
+if [ "$mode" = "remote" ] &&
+   [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ] &&
+   [ -n "${TF_VAR_cloudflare_account_id:-}" ]; then
+  export CLOUDFLARE_ACCOUNT_ID="$TF_VAR_cloudflare_account_id"
+fi
+
+if [ "$mode" = "remote" ] &&
+   [ -z "${CLOUDFLARE_API_TOKEN:-}" ] &&
+   [ -n "${TF_VAR_cloudflare_account_api_token:-}" ]; then
+  export CLOUDFLARE_API_TOKEN="$TF_VAR_cloudflare_account_api_token"
+fi
+
+if [ "$mode" = "remote" ] && [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+  cat >&2 <<'EOF'
+warning: CLOUDFLARE_ACCOUNT_ID is not set.
+Wrangler may try to infer the account through /memberships, which can fail for
+narrowly scoped tokens. Set CLOUDFLARE_ACCOUNT_ID or TF_VAR_cloudflare_account_id
+if this command fails.
+EOF
+fi
+
+d1_json() {
+  sql="$1"
+  if [ "$mode" = "local" ]; then
+    wrangler d1 execute "$database" \
+      --local \
+      --config "$config" \
+      --command "$sql" \
+      --json
+  else
+    wrangler d1 execute "$database" \
+      --remote \
+      --config "$config" \
+      --command "$sql" \
+      --json
+  fi
+}
+
+rows_filter='
+  if type == "array" then
+    (.[0].results // .[0].result // [])
+  elif type == "object" then
+    (.result[0].results // .result.results // .results // [])
+  else
+    []
+  end
+'
+
+subscribers_sql="
+SELECT id, email, status, source, consent_at, created_at, updated_at, resend_contact_id, resend_synced_at, sync_error
+FROM subscribers
+ORDER BY updated_at DESC
+LIMIT $limit
+"
+
+status_sql="
+SELECT status, COUNT(*) AS count
+FROM subscribers
+GROUP BY status
+ORDER BY status
+"
+
+source_sql="
+SELECT source, COUNT(*) AS count
+FROM subscribers
+GROUP BY source
+ORDER BY count DESC, source
+"
+
+metrics_sql="
+SELECT day, event_type, source, count
+FROM signup_metric_rollups
+ORDER BY day DESC, event_type, source
+LIMIT 80
+"
+
+subscribers_json="$(d1_json "$subscribers_sql")"
+
+if [ "$format" = "json" ]; then
+  jq "$rows_filter" <<<"$subscribers_json"
+  exit 0
+fi
+
+status_json="$(d1_json "$status_sql")"
+source_json="$(d1_json "$source_sql")"
+
+printf 'MCC D1 signups (%s: %s)\n' "$mode" "$database"
+printf 'Generated: %s\n\n' "$(date -Is)"
+
+total="$(
+  jq "[$rows_filter[]?.count] | add // 0" <<<"$status_json"
+)"
+printf 'Total subscribers: %s\n\n' "$total"
+
+printf 'By status:\n'
+jq -r "$rows_filter | ([\"STATUS\", \"COUNT\"]), (.[] | [.status, (.count|tostring)]) | @tsv" \
+  <<<"$status_json" |
+  column -t -s $'\t'
+printf '\n'
+
+printf 'By source:\n'
+jq -r "$rows_filter | ([\"SOURCE\", \"COUNT\"]), (.[] | [.source, (.count|tostring)]) | @tsv" \
+  <<<"$source_json" |
+  column -t -s $'\t'
+printf '\n'
+
+printf 'Recent subscribers:\n'
+jq -r "$rows_filter | ([\"EMAIL\", \"STATUS\", \"SOURCE\", \"CREATED\", \"UPDATED\", \"RESEND\", \"SYNC_ERROR\"]), (.[] | [.email, .status, .source, .created_at, .updated_at, (.resend_synced_at // \"\"), (.sync_error // \"\")]) | @tsv" \
+  <<<"$subscribers_json" |
+  column -t -s $'\t'
+
+if [ "$show_metrics" = "1" ]; then
+  printf '\nRecent signup metric rollups:\n'
+  metrics_json="$(d1_json "$metrics_sql")"
+  jq -r "$rows_filter | ([\"DAY\", \"EVENT\", \"SOURCE\", \"COUNT\"]), (.[] | [.day, .event_type, .source, (.count|tostring)]) | @tsv" \
+    <<<"$metrics_json" |
+    column -t -s $'\t'
+fi

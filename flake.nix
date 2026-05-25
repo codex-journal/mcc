@@ -58,6 +58,7 @@
             pkgs.jq
             pkgs.nodejs_22
             pkgs.opentofu
+            pkgs.util-linux
             pkgs.wrangler
           ];
 
