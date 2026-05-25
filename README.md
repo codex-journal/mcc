@@ -42,6 +42,9 @@ status for unrelated projects.
 
 ## Build
 
+Cloudflare Pages is the only active public site deployment path. GitHub Pages
+must remain disabled for this repository.
+
 Cloudflare Pages deploys the static assets from `dist` and uploads Pages
 Functions from the repo-level `functions` directory:
 

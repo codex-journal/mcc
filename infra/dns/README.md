@@ -13,6 +13,9 @@ DNS:                      marxcompute.club -> marxcompute-club.pages.dev
 Mail DNS:                 Migadu MX/SPF/DKIM/DMARC
 ```
 
+Cloudflare Pages is the active public site deployment path. GitHub Pages should
+stay disabled on the GitHub repository; do not add a repo-root `CNAME` file.
+
 The apex `marxcompute.club` is attached directly to the Cloudflare Pages project
 and uses a proxied apex `CNAME` record to the Pages project. Cloudflare flattens
 the apex CNAME at the edge. This keeps typed apex URLs working now without
