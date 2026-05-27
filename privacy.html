@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light only">
+  <title>Privacy | Marx Compute Club</title>
+  <meta name="description" content="Privacy notice for Marx Compute Club.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    @font-face {
+      font-family: "MCC Display";
+      src: url("./assets/fonts/AdwaitaSans-Regular.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "MCC Mono";
+      src: url("./assets/fonts/LiberationMono-Bold.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "MCC Meta";
+      src: url("./assets/fonts/AdwaitaMono-Bold.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    :root {
+      --paper: #f5f1e7;
+      --ink: #0b0b0a;
+      --muted: #666155;
+      --rule: #171713;
+      --red: #9d1414;
+      --font-display: "MCC Display", "Adwaita Sans", Arial, Helvetica, sans-serif;
+      --font-body: "MCC Mono", "Liberation Mono", "Courier New", monospace;
+      --font-meta: "MCC Meta", "Adwaita Mono", "Liberation Mono", monospace;
+      color-scheme: only light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    body {
+      font-family: var(--font-body);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    main {
+      width: min(920px, 100%);
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    header {
+      display: grid;
+      gap: 12px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .eyebrow,
+    .meta,
+    footer {
+      color: var(--muted);
+      font-family: var(--font-meta);
+      font-size: 13px;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 8ch;
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(44px, 10vw, 118px);
+      font-weight: 900;
+      font-synthesis-weight: none;
+      line-height: 0.86;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    article {
+      display: grid;
+      gap: 22px;
+      padding: 34px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    section {
+      display: grid;
+      gap: 8px;
+      max-width: 68ch;
+    }
+
+    h2 {
+      margin: 0;
+      color: var(--red);
+      font-family: var(--font-meta);
+      font-size: 15px;
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+
+    p {
+      margin: 0;
+      font-size: clamp(16px, 2vw, 20px);
+      line-height: 1.45;
+    }
+
+    ul {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 1.25em;
+      font-size: clamp(16px, 2vw, 20px);
+      line-height: 1.45;
+    }
+
+    footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      padding-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow"><a href="index.html">Marx Compute Club</a></p>
+      <h1>Privacy Notice</h1>
+      <p class="meta">Effective May 26, 2026.</p>
+    </header>
+
+    <article>
+      <section>
+        <h2>What We Collect</h2>
+        <p>When you sign up for MCC updates, we collect the email address you submit and basic operational metadata needed to run the signup flow, prevent abuse, and maintain the list.</p>
+      </section>
+
+      <section>
+        <h2>How We Use It</h2>
+        <p>We use signup information to send MCC announcements, coordinate access to MCC services, debug delivery problems, and protect the site from abuse. We do not sell personal information or run advertising profiles.</p>
+      </section>
+
+      <section>
+        <h2>Services</h2>
+        <p>MCC uses managed services to operate the site and mail path. Those services may process data for us as part of hosting, abuse prevention, analytics, and email delivery.</p>
+        <ul>
+          <li>Cloudflare Pages, Turnstile, Web Analytics, Workers, and D1 for hosting, bot checks, aggregate analytics, signup handling, and storage.</li>
+          <li>Resend for outbound email delivery.</li>
+          <li>Migadu for mailbox hosting.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Analytics</h2>
+        <p>Cloudflare Web Analytics gives us aggregate traffic information. It is used to understand whether the site is being reached and whether it is being abused. We do not use third-party ad tracking.</p>
+      </section>
+
+      <section>
+        <h2>Retention</h2>
+        <p>Signup records are kept while they are useful for MCC updates and community operations. Operational logs and abuse-prevention records may be retained separately by MCC or the managed services above.</p>
+      </section>
+
+      <section>
+        <h2>Requests</h2>
+        <p>To update or delete your signup information, email <a href="mailto:source@marxcompute.club">source@marxcompute.club</a>.</p>
+      </section>
+
+      <section>
+        <h2>Changes</h2>
+        <p>This notice may change as MCC infrastructure changes. Material changes will be reflected on this page.</p>
+      </section>
+    </article>
+
+    <footer>
+      <span>marxcompute.club</span>
+      <span><a href="mailto:source@marxcompute.club">source@marxcompute.club</a></span>
+      <span>M-C-M' / M-C-C</span>
+    </footer>
+  </main>
+</body>
+</html>
