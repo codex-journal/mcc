@@ -152,27 +152,55 @@
     <header>
       <p class="eyebrow"><a href="index.html">Marx Compute Club</a></p>
       <h1>Privacy Notice</h1>
-      <p class="meta">Effective May 26, 2026.</p>
+      <p class="meta">Effective May 30, 2026.</p>
     </header>
 
     <article>
       <section>
-        <h2>What We Collect</h2>
-        <p>When you sign up for MCC updates, we collect the email address you submit and basic operational metadata needed to run the signup flow, prevent abuse, and maintain the list.</p>
+        <h2>Scope</h2>
+        <p>This notice covers the MCC public site and launch-imminent MCC services, including identity, source hosting, and chat surfaces under marxcompute.club.</p>
       </section>
 
       <section>
-        <h2>How We Use It</h2>
-        <p>We use signup information to send MCC announcements, coordinate access to MCC services, debug delivery problems, and protect the site from abuse. We do not sell personal information or run advertising profiles.</p>
+        <h2>Signup And Announcements</h2>
+        <p>When you sign up for MCC updates, we collect the email address you submit and basic operational metadata needed to run the signup flow, prevent abuse, maintain the list, and send announcements.</p>
       </section>
 
       <section>
-        <h2>Services</h2>
-        <p>MCC uses managed services to operate the site and mail path. Those services may process data for us as part of hosting, abuse prevention, analytics, and email delivery.</p>
+        <h2>Identity</h2>
+        <p>id.marxcompute.club uses Pocket ID for MCC identity and passkey login. MCC may store account fields such as username, email, display name, profile settings, app grants, login events, and audit logs. Passkeys use public-key credentials. MCC does not receive your private passkey or device unlock secret.</p>
+      </section>
+
+      <section>
+        <h2>Source Hosting</h2>
+        <p>git.marxcompute.club uses Forgejo for source hosting. MCC may store account data, public SSH keys, repositories, commits, comments, issues, pull requests, organizations, teams, permissions, activity records, and security logs. Git history and public contribution metadata may be intentionally durable.</p>
+      </section>
+
+      <section>
+        <h2>Chat</h2>
+        <p>chat.marxcompute.club uses IRC and The Lounge for MCC chat. MCC may store account records, nicknames, channel membership, messages, moderation actions, client sessions, and connection metadata. MCChat is not end-to-end encrypted private messaging. Channel history may be logged, indexed, or exported for moderation, recovery, and artifact workflows unless a channel is explicitly designated otherwise.</p>
+      </section>
+
+      <section>
+        <h2>Operational Data</h2>
+        <p>MCC services may process IP addresses, user agents, request paths, timestamps, login attempts, rate-limit events, abuse-prevention events, error logs, and security audit records. We use this data to operate services, debug failures, detect abuse, and recover from incidents. We do not sell personal information or run advertising profiles.</p>
+      </section>
+
+      <section>
+        <h2>Backups And Retention</h2>
+        <p>Service databases, repositories, chat records, configuration, and operational logs may be included in backups. Deletion requests will be handled for active systems where practical, but copies may persist in backups, logs, Git history, signed artifacts, or external recipients until normal rotation or archival limits apply.</p>
+      </section>
+
+      <section>
+        <h2>Services And Providers</h2>
+        <p>MCC uses self-hosted and managed services to operate the site, identity, source, chat, mail, backups, and abuse-prevention path. These services may process data for us as part of those functions.</p>
         <ul>
-          <li>Cloudflare Pages, Turnstile, Web Analytics, Workers, and D1 for hosting, bot checks, aggregate analytics, signup handling, and storage.</li>
+          <li>Cloudflare Pages, Workers, D1, Turnstile, Web Analytics, DNS, and Tunnel for hosting, signup handling, bot checks, aggregate analytics, DNS, and private service routing.</li>
+          <li>Hetzner for MCC virtual servers and related infrastructure.</li>
           <li>Resend for outbound email delivery.</li>
           <li>Migadu for mailbox hosting.</li>
+          <li>Backblaze B2 or Hetzner storage services for backups if enabled for a given service.</li>
+          <li>Tailscale for operator and administrative network access where used. Ordinary MCC users are not expected to join the MCC tailnet unless explicitly told otherwise.</li>
         </ul>
       </section>
 
@@ -182,13 +210,8 @@
       </section>
 
       <section>
-        <h2>Retention</h2>
-        <p>Signup records are kept while they are useful for MCC updates and community operations. Operational logs and abuse-prevention records may be retained separately by MCC or the managed services above.</p>
-      </section>
-
-      <section>
         <h2>Requests</h2>
-        <p>To update or delete your signup information, email <a href="mailto:source@marxcompute.club">source@marxcompute.club</a>.</p>
+        <p>To update or delete your signup information, or to ask about MCC account data, email <a href="mailto:source@marxcompute.club">source@marxcompute.club</a>. Some records may be retained when needed for security, abuse prevention, archival integrity, legal obligations, or source-control provenance.</p>
       </section>
 
       <section>
