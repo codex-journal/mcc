@@ -1,0 +1,50 @@
+Subject: MCC infrastructure is opening
+From: Marx Compute Club <material@marxcompute.club>
+Reply-To: source@marxcompute.club
+Segment: MCC announcements
+Status: draft only. Do not send without explicit operator approval.
+
+Marx Compute Club is opening its first infrastructure surfaces.
+
+The website and announcement list stay at:
+
+https://www.marxcompute.club/
+
+MCC ID is the identity surface. It uses passkeys through Pocket ID. The point is
+not to collect passwords. The point is to keep source, chat, and future
+infrastructure from becoming separate identity fragments.
+
+https://id.marxcompute.club/
+
+Marx Compute Source is the source surface. It is a self-hosted Forgejo instance
+for MCC repositories, issue trails, patches, and contribution metadata. Access is
+review controlled. Public read access and mirrors will open where appropriate.
+Arbitrary signup and arbitrary write access are not enabled.
+
+https://git.marxcompute.club/
+
+MCChat is the chat surface. It is IRC through a web client, not Discord and not a
+closed social platform. Access is invite controlled for now, and the web client
+is the supported path at launch. The immediate goal is a working room for source,
+theory, simulations, and operational traces.
+
+https://chat.marxcompute.club/
+
+This is the first pass at MCC as source infrastructure: a build club for the
+infrastructure of theoretical production. The platform is part of the work. It
+will be revised in public where that makes sense, and kept review-controlled
+where that is the honest operational boundary.
+
+If you want access to the chat/source surfaces, reply to this email with the
+name or handle you want attached to the request and a sentence about what you
+want to work on or follow.
+
+Privacy:
+https://www.marxcompute.club/privacy.html
+
+Terms:
+https://www.marxcompute.club/terms.html
+
+You are receiving this because you signed up for MCC updates at
+marxcompute.club. Reply here if you want to be removed from the announcement
+list.

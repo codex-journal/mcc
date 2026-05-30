@@ -143,6 +143,16 @@ The helper defaults to the `MCC announcements` segment and
 `--send` is passed. The raw Resend HTTP API currently expects `segment_id`;
 their SDK examples use `segmentId`.
 
+Reviewed launch drafts live in:
+
+```text
+drafts/broadcasts/platform-announcement.txt
+drafts/emails/mcchat-access.txt
+```
+
+Do not send either draft until the relevant public surfaces and invite flow have
+been smoke tested by the operator.
+
 Before sending a broadcast smoke test, inspect the segment contacts:
 
 ```bash

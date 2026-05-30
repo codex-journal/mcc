@@ -1,0 +1,43 @@
+Subject: Your MCChat access link
+From: Marx Compute Club <material@marxcompute.club>
+Reply-To: source@marxcompute.club
+Status: draft template. Send manually after invite/redeem flow is smoke tested.
+
+You have been invited to MCChat.
+
+MCChat is the MCC chat surface: IRC through a web client, for source work,
+theory, simulations, infrastructure, and the traces around them.
+
+Your requested handle / IRC nick:
+
+{{nick}}
+
+Use this private link to create your MCChat password:
+
+{{redeem_url}}
+
+The password you create here is for MCChat only. MCC ID / passkey login is a
+separate identity surface and may be used for source hosting or other MCC
+services. You do not need a Pocket ID passkey to enter MCChat through this
+invite.
+
+After setup, enter through:
+
+https://chat.marxcompute.club/
+
+Use the web client for now. External IRC client support is not part of this
+invite yet.
+
+Do not forward the invite link or temporary credentials. If the link expires or
+the handle is wrong, reply to this email and it can be reissued.
+
+MCChat is not end-to-end encrypted private messaging. Channel history and
+connection metadata may be logged, indexed, backed up, or exported for
+moderation, recovery, and artifact workflows unless a channel is explicitly
+marked otherwise.
+
+Privacy:
+https://www.marxcompute.club/privacy.html
+
+Terms:
+https://www.marxcompute.club/terms.html
