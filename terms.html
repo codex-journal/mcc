@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light only">
+  <title>Terms | Marx Compute Club</title>
+  <meta name="description" content="Terms and acceptable use for Marx Compute Club.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    @font-face {
+      font-family: "MCC Display";
+      src: url("./assets/fonts/AdwaitaSans-Regular.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "MCC Mono";
+      src: url("./assets/fonts/LiberationMono-Bold.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "MCC Meta";
+      src: url("./assets/fonts/AdwaitaMono-Bold.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    :root {
+      --paper: #f5f1e7;
+      --ink: #0b0b0a;
+      --muted: #666155;
+      --rule: #171713;
+      --red: #9d1414;
+      --font-display: "MCC Display", "Adwaita Sans", Arial, Helvetica, sans-serif;
+      --font-body: "MCC Mono", "Liberation Mono", "Courier New", monospace;
+      --font-meta: "MCC Meta", "Adwaita Mono", "Liberation Mono", monospace;
+      color-scheme: only light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    body {
+      font-family: var(--font-body);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    main {
+      width: min(920px, 100%);
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    header {
+      display: grid;
+      gap: 12px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .eyebrow,
+    .meta,
+    footer {
+      color: var(--muted);
+      font-family: var(--font-meta);
+      font-size: 13px;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 9ch;
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(44px, 10vw, 118px);
+      font-weight: 900;
+      font-synthesis-weight: none;
+      line-height: 0.86;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    article {
+      display: grid;
+      gap: 22px;
+      padding: 34px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    section {
+      display: grid;
+      gap: 8px;
+      max-width: 68ch;
+    }
+
+    h2 {
+      margin: 0;
+      color: var(--red);
+      font-family: var(--font-meta);
+      font-size: 15px;
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+
+    p {
+      margin: 0;
+      font-size: clamp(16px, 2vw, 20px);
+      line-height: 1.45;
+    }
+
+    ul {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 1.25em;
+      font-size: clamp(16px, 2vw, 20px);
+      line-height: 1.45;
+    }
+
+    footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      padding-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow"><a href="index.html">Marx Compute Club</a></p>
+      <h1>Terms</h1>
+      <p class="meta">Effective May 30, 2026.</p>
+    </header>
+
+    <article>
+      <section>
+        <h2>Scope</h2>
+        <p>These terms apply to MCC services under marxcompute.club, including the public site, identity, source hosting, chat, and invitation flows.</p>
+      </section>
+
+      <section>
+        <h2>Access</h2>
+        <p>MCC services may be invite-only, review-controlled, or manually provisioned. Do not share private invite links, temporary credentials, access tokens, or administrative access. Keep account contact information usable enough for operational notices.</p>
+      </section>
+
+      <section>
+        <h2>Acceptable Use</h2>
+        <p>Do not use MCC infrastructure to attack systems, distribute malware, spam, evade access controls, harvest credentials, dox people, threaten people, or overload services. Do not upload material you do not have a lawful basis to use. Do not post secrets or private data that should not be archived.</p>
+      </section>
+
+      <section>
+        <h2>Source And Chat</h2>
+        <p>Repositories, commits, issues, pull requests, chat messages, moderation records, and other contribution metadata may be copied, mirrored, indexed, backed up, or archived. Treat source and chat surfaces as operational infrastructure, not private end-to-end encrypted storage.</p>
+      </section>
+
+      <section>
+        <h2>Licenses</h2>
+        <p>Repository-level license files control source code, documentation, and artifacts where present. Unless otherwise stated, MCC site code is AGPL-3.0-or-later and public text/artifact pages are CC BY-SA 4.0. MCC names, marks, and logos remain identity assets and are not granted for unrelated use.</p>
+      </section>
+
+      <section>
+        <h2>Moderation And Suspension</h2>
+        <p>MCC may remove content, disable accounts, revoke access, or preserve records when needed to operate services, investigate abuse, protect infrastructure, or maintain source-control provenance.</p>
+      </section>
+
+      <section>
+        <h2>Services</h2>
+        <p>MCC uses self-hosted and managed services to operate the platform. The <a href="privacy.html">Privacy Notice</a> describes the launch providers and data handling posture.</p>
+      </section>
+
+      <section>
+        <h2>No Warranty</h2>
+        <p>MCC services are provided as-is and may change, break, move, or be withdrawn. Do not rely on MCC as the only copy of work you cannot afford to lose.</p>
+      </section>
+
+      <section>
+        <h2>Contact</h2>
+        <p>For access, removal, abuse, or policy questions, email <a href="mailto:source@marxcompute.club">source@marxcompute.club</a>.</p>
+      </section>
+    </article>
+
+    <footer>
+      <span>marxcompute.club</span>
+      <span><a href="mailto:source@marxcompute.club">source@marxcompute.club</a></span>
+      <span><a href="privacy.html">Privacy</a></span>
+      <span>M-C-M' / M-C-C</span>
+    </footer>
+  </main>
+</body>
+</html>

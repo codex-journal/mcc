@@ -4,5 +4,5 @@ set -euo pipefail
 rm -rf dist
 mkdir -p dist
 
-cp index.html privacy.html favicon.svg dist/
+cp index.html privacy.html terms.html favicon.svg dist/
 cp -R assets dist/
