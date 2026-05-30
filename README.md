@@ -34,16 +34,25 @@ See `docs/email.md` for Migadu mailbox setup.
 
 ## License
 
-Code in this repository is licensed under the GNU Affero General Public License
-v3.0 or later. See `LICENSE`.
+Source code, build scripts, Cloudflare Functions, and infrastructure code in
+this repository are licensed under the GNU Affero General Public License v3.0
+or later. See `LICENSE`.
 
 Textual site content, posts, event copy, and documentation are licensed under
 Creative Commons Attribution-ShareAlike 4.0 International unless otherwise
 noted. See `LICENSES/CC-BY-SA-4.0.txt`.
 
-MCC names, marks, and logos are identity assets. This repository does not grant
-trademark rights or permission to imply endorsement, affiliation, or official
-status for unrelated projects.
+Rendered story cards, artifact pages, and non-logo visual compositions generated
+from this repository are also licensed under CC BY-SA 4.0 unless otherwise
+noted.
+
+MCC names, marks, logos, and source marks are identity assets. This repository
+does not grant trademark rights or permission to imply endorsement,
+affiliation, official status, or unrelated use.
+
+Third-party logos, screenshots, service marks, product names, and referenced
+marks remain property of their respective owners. They may appear here only for
+identification, commentary, provenance, or documentation where applicable.
 
 ## Build
 
