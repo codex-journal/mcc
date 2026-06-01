@@ -20,6 +20,7 @@ OUT_DIR = Path(os.environ.get("MCC_SOURCE_NOTES_OUT_DIR", DIST_DIR / "source-not
 PUBLIC_OUT_DIR = os.environ.get("MCC_PUBLIC_SOURCE_NOTES_DIR", "source-notes")
 RENDERER_NAME = "mcc-org-source-note-renderer"
 RENDERER_VERSION = "0.1.0"
+EXPERIMENTAL_NOTICE = "Experimental source-note surface. Format, metadata, and copy may change."
 
 
 def sha256_bytes(value: bytes) -> str:
@@ -341,6 +342,7 @@ def render_note(path: Path, build: dict[str, Any]) -> dict[str, Any]:
     </section>
     <footer>
       <span>marxcompute.club</span>
+      <span>{html.escape(EXPERIMENTAL_NOTICE)}</span>
       <span><a href="../../index.html">Home</a></span>
       <span><a href="../index.json">Index JSON</a></span>
       <span>M-C-M' / M-C-C</span>
@@ -407,6 +409,7 @@ def render_index(notes: list[dict[str, Any]], manifest_sha256: str, build: dict[
     </section>
     <footer>
       <span>marxcompute.club</span>
+      <span>{html.escape(EXPERIMENTAL_NOTICE)}</span>
       <span><a href="../index.html">Home</a></span>
       <span><a href="../privacy.html">Privacy</a></span>
       <span><a href="../terms.html">Terms</a></span>
