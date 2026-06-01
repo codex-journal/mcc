@@ -56,7 +56,7 @@ still has to live somewhere.
 
 Some dependencies can be protocolized. Others remain obligations: payment,
 maintenance, recovery, trust, cost, and risk. The world of software cannot
-levitate autopoietically. It requires ground. Thus the platform remains a
+yet levitate autopoietically. It requires ground. Thus the platform remains a
 critical form for mediating internal execution and external decentralization.
 Infrastructure still has to be bootstrapped and maintained despite protocolist
 idealism. The dialectic between centralization and decentralization, platform and
