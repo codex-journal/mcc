@@ -16,8 +16,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DIR = Path(os.environ.get("MCC_SOURCE_NOTES_DIR", ROOT / "source-notes"))
 DIST_DIR = Path(os.environ.get("MCC_DIST_DIR", ROOT / "dist"))
-OUT_DIR = Path(os.environ.get("MCC_SOURCE_NOTES_OUT_DIR", DIST_DIR / "source-notes"))
-PUBLIC_OUT_DIR = os.environ.get("MCC_PUBLIC_SOURCE_NOTES_DIR", "source-notes")
+OUT_DIR = Path(os.environ.get("MCC_SOURCE_NOTES_OUT_DIR", DIST_DIR / "notes"))
+PUBLIC_OUT_DIR = os.environ.get("MCC_PUBLIC_SOURCE_NOTES_DIR", "notes")
 RENDERER_NAME = "mcc-org-source-note-renderer"
 RENDERER_VERSION = "0.1.0"
 EXPERIMENTAL_NOTICE = "Experimental source-note surface. Format, metadata, and copy may change."
@@ -361,8 +361,8 @@ def render_note(path: Path, build: dict[str, Any]) -> dict[str, Any]:
         "date": date,
         "summary": summary,
         "source_path": relative_to_root(path),
-        "current_path": f"source-notes/{slug}/index.html",
-        "version_path": f"source-notes/{slug}/{version}.html",
+        "current_path": f"{PUBLIC_OUT_DIR}/{slug}/index.html",
+        "version_path": f"{PUBLIC_OUT_DIR}/{slug}/{version}.html",
         "source_sha256": source_sha256,
         "body_html_sha256": body_sha256,
         "html_sha256": sha256_bytes(page),

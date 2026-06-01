@@ -15,8 +15,8 @@ copy candidates. It is not deployed by `scripts/build-site`.
 
 ## Source Notes
 
-Versioned source notes are rendered from `source-notes/*.org` into
-`dist/source-notes/` by `scripts/build-site`. Each rendered note gets a current
+Versioned source notes are rendered from `source-notes/*.org` into the public
+`/notes/` route by `scripts/build-site`. Each rendered note gets a current
 page, a source-hash-addressed version page, and JSON provenance with SHA-256
 hashes for the Org source, rendered body, renderer source, `flake.lock`, and
 build revision where available.

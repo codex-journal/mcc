@@ -15,9 +15,9 @@ for run in one two; do
     python3 "$repo_root/scripts/render-source-notes" > "$tmp/$run/render.log"
 done
 
-diff -ru "$tmp/one/dist/source-notes" "$tmp/two/dist/source-notes"
+diff -ru "$tmp/one/dist/notes" "$tmp/two/dist/notes"
 
-actual="$(sha256sum "$tmp/one/dist/source-notes/index.json" | awk '{print $1}')"
+actual="$(sha256sum "$tmp/one/dist/notes/index.json" | awk '{print $1}')"
 echo "fixture manifest sha256: $actual"
-test -s "$tmp/one/dist/source-notes/fixture-source-note/index.html"
-test -s "$tmp/one/dist/source-notes/fixture-source-note/provenance.json"
+test -s "$tmp/one/dist/notes/fixture-source-note/index.html"
+test -s "$tmp/one/dist/notes/fixture-source-note/provenance.json"

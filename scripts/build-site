@@ -5,5 +5,8 @@ rm -rf dist
 mkdir -p dist
 
 cp index.html privacy.html terms.html favicon.svg dist/
+if [ -f _redirects ]; then
+  cp _redirects dist/
+fi
 cp -R assets dist/
 python3 scripts/render-source-notes
