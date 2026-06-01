@@ -14,6 +14,43 @@
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
       agents = llm-agents.packages.${system};
+      siteBuild = pkgs.writeShellApplication {
+        name = "mcc-build-site";
+        runtimeInputs = [
+          pkgs.coreutils
+          pkgs.git
+          pkgs.python3
+        ];
+        text = ''
+          repo_root="''${MCC_REPO_ROOT:-}"
+          if [[ -z "$repo_root" ]]; then
+            repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+          fi
+
+          cd "$repo_root"
+          exec scripts/build-site "$@"
+        '';
+      };
+      site = pkgs.stdenvNoCC.mkDerivation {
+        pname = "marxcompute-club-site";
+        version = "0.1.0";
+        src = ./.;
+        nativeBuildInputs = [
+          pkgs.python3
+        ];
+        buildPhase = ''
+          runHook preBuild
+          patchShebangs scripts
+          scripts/build-site
+          runHook postBuild
+        '';
+        installPhase = ''
+          runHook preInstall
+          mkdir -p "$out"
+          cp -R dist/. "$out/"
+          runHook postInstall
+        '';
+      };
       dnsTofu = pkgs.writeShellApplication {
         name = "mcc-dns-tofu";
         runtimeInputs = [
@@ -41,11 +78,25 @@
       };
     in
     {
-      packages.${system}.dns-tofu = dnsTofu;
+      packages.${system} = {
+        default = site;
+        site = site;
+        build-site = siteBuild;
+        dns-tofu = dnsTofu;
+      };
 
-      apps.${system}.dns-tofu = {
-        type = "app";
-        program = "${dnsTofu}/bin/mcc-dns-tofu";
+      checks.${system}.site = site;
+
+      apps.${system} = {
+        build-site = {
+          type = "app";
+          program = "${siteBuild}/bin/mcc-build-site";
+        };
+
+        dns-tofu = {
+          type = "app";
+          program = "${dnsTofu}/bin/mcc-dns-tofu";
+        };
       };
 
       devShells.${system} = {
@@ -58,12 +109,15 @@
             pkgs.jq
             pkgs.nodejs_22
             pkgs.opentofu
+            pkgs.python3
             pkgs.util-linux
             pkgs.wrangler
           ];
 
           shellHook = ''
             echo "MCC shell"
+            echo "Site build: scripts/build-site"
+            echo "Source notes: add Org files under source-notes/"
             echo "DNS: cd infra/dns && tofu init && tofu plan"
             echo "Signup dev: wrangler pages dev . --config wrangler.local.jsonc"
           '';

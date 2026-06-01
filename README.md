@@ -13,6 +13,15 @@ nix develop
 `prototypes/site-copy.html` is a standalone local page for comparing homepage
 copy candidates. It is not deployed by `scripts/build-site`.
 
+## Source Notes
+
+Versioned source notes are rendered from `source-notes/*.org` into
+`dist/source-notes/` by `scripts/build-site`. Each rendered note gets a current
+page, a source-hash-addressed version page, and JSON provenance with SHA-256
+hashes for the Org source and rendered body.
+
+No source note is published until an `.org` file is added under `source-notes/`.
+
 ## Signup Flow
 
 The homepage includes a minimal announcement signup form. Local signup testing

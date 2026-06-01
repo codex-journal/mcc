@@ -1,0 +1,394 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import hashlib
+import html
+import json
+import re
+import shutil
+import sys
+from pathlib import Path
+from typing import Any
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SOURCE_DIR = ROOT / "source-notes"
+DIST_DIR = ROOT / "dist"
+OUT_DIR = DIST_DIR / "source-notes"
+RENDERER_NAME = "mcc-org-source-note-renderer"
+RENDERER_VERSION = "0.1.0"
+
+
+def sha256_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
+
+
+def stable_json(value: Any) -> bytes:
+    return (
+        json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        + "\n"
+    ).encode("utf-8")
+
+
+def write_bytes(path: Path, value: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(value)
+
+
+def slugify(value: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+    return slug or "untitled"
+
+
+def parse_metadata(text: str) -> tuple[dict[str, str], list[str]]:
+    metadata: dict[str, str] = {}
+    body: list[str] = []
+    in_header = True
+    for line in text.splitlines():
+        match = re.match(r"^\s*#\+([A-Za-z0-9_-]+):\s*(.*)$", line)
+        if in_header and match:
+            metadata[match.group(1).upper()] = match.group(2).strip()
+            continue
+        if line.strip() and not match:
+            in_header = False
+        body.append(line)
+    return metadata, body
+
+
+def safe_href(value: str) -> str:
+    value = value.strip()
+    if re.match(r"^(https?://|mailto:|/|#|\./|\.\./)", value):
+        return html.escape(value, quote=True)
+    return "#"
+
+
+def render_inline(value: str) -> str:
+    def link_repl(match: re.Match[str]) -> str:
+        href = safe_href(match.group(1))
+        label = render_inline(match.group(2))
+        return f'<a href="{href}">{label}</a>'
+
+    placeholders: list[str] = []
+
+    def hold(markup: str) -> str:
+        placeholders.append(markup)
+        return f"\u0000{len(placeholders) - 1}\u0000"
+
+    value = re.sub(r"\[\[([^\]]+)\]\[([^\]]+)\]\]", lambda m: hold(link_repl(m)), value)
+    value = html.escape(value, quote=False)
+    value = re.sub(r"~([^~]+)~", r"<code>\1</code>", value)
+    value = re.sub(r"=([^=]+)=", r"<code>\1</code>", value)
+    value = re.sub(r"\*([^*\n]+)\*", r"<strong>\1</strong>", value)
+    value = re.sub(r"/([^/\n]+?)/", r"<em>\1</em>", value)
+    for index, markup in enumerate(placeholders):
+        value = value.replace(f"\u0000{index}\u0000", markup)
+    return value
+
+
+def is_block_start(line: str) -> bool:
+    stripped = line.strip()
+    return bool(
+        re.match(r"^\*+\s+", stripped)
+        or re.match(r"^[-+]\s+", stripped)
+        or re.match(r"^\d+[.)]\s+", stripped)
+        or re.match(r"^#\+begin_", stripped, re.I)
+        or re.match(r"^#\+end_", stripped, re.I)
+    )
+
+
+def render_org_body(lines: list[str]) -> str:
+    chunks: list[str] = []
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        stripped = line.strip()
+
+        if not stripped:
+            index += 1
+            continue
+
+        begin_src = re.match(r"^#\+begin_src\s*([A-Za-z0-9_-]+)?", stripped, re.I)
+        if begin_src:
+            lang = begin_src.group(1) or "text"
+            index += 1
+            code: list[str] = []
+            while index < len(lines) and not re.match(r"^#\+end_src", lines[index].strip(), re.I):
+                code.append(lines[index])
+                index += 1
+            index += 1
+            chunks.append(
+                f'<pre data-language="{html.escape(lang, quote=True)}"><code>'
+                + html.escape("\n".join(code))
+                + "</code></pre>"
+            )
+            continue
+
+        begin_quote = re.match(r"^#\+begin_quote", stripped, re.I)
+        if begin_quote:
+            index += 1
+            quote: list[str] = []
+            while index < len(lines) and not re.match(r"^#\+end_quote", lines[index].strip(), re.I):
+                quote.append(lines[index])
+                index += 1
+            index += 1
+            chunks.append("<blockquote>" + render_org_body(quote) + "</blockquote>")
+            continue
+
+        heading = re.match(r"^(\*{1,5})\s+(.+)$", stripped)
+        if heading:
+            level = min(len(heading.group(1)) + 1, 6)
+            chunks.append(f"<h{level}>{render_inline(heading.group(2))}</h{level}>")
+            index += 1
+            continue
+
+        unordered = re.match(r"^[-+]\s+(.+)$", stripped)
+        ordered = re.match(r"^\d+[.)]\s+(.+)$", stripped)
+        if unordered or ordered:
+            tag = "ol" if ordered else "ul"
+            items: list[str] = []
+            pattern = r"^\d+[.)]\s+(.+)$" if ordered else r"^[-+]\s+(.+)$"
+            while index < len(lines):
+                item = re.match(pattern, lines[index].strip())
+                if not item:
+                    break
+                items.append(f"<li>{render_inline(item.group(1))}</li>")
+                index += 1
+            chunks.append(f"<{tag}>" + "".join(items) + f"</{tag}>")
+            continue
+
+        if stripped.startswith("#+"):
+            index += 1
+            continue
+
+        para = [stripped]
+        index += 1
+        while index < len(lines) and lines[index].strip() and not is_block_start(lines[index]):
+            para.append(lines[index].strip())
+            index += 1
+        chunks.append("<p>" + render_inline(" ".join(para)) + "</p>")
+
+    return "\n".join(chunks)
+
+
+def page_css(prefix: str) -> str:
+    return """
+    @font-face {
+      font-family: "MCC Display";
+      src: url("__PREFIX__assets/fonts/AdwaitaSans-Regular.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "MCC Mono";
+      src: url("__PREFIX__assets/fonts/LiberationMono-Bold.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "MCC Meta";
+      src: url("__PREFIX__assets/fonts/AdwaitaMono-Bold.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    :root {
+      --paper: #f5f1e7;
+      --ink: #0b0b0a;
+      --muted: #666155;
+      --rule: #171713;
+      --red: #9d1414;
+      --pale: rgba(255, 255, 255, 0.18);
+      --font-display: "MCC Display", "Adwaita Sans", Arial, Helvetica, sans-serif;
+      --font-body: "MCC Mono", "Liberation Mono", "Courier New", monospace;
+      --font-meta: "MCC Meta", "Adwaita Mono", "Liberation Mono", monospace;
+      color-scheme: only light;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100vh; background: var(--paper); color: var(--ink); }
+    body { font-family: var(--font-body); }
+    a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+    main { width: min(980px, 100%); margin: 0 auto; padding: 28px; }
+    header { display: grid; gap: 14px; padding-bottom: 18px; border-bottom: 1px solid var(--rule); }
+    .eyebrow, .meta, footer, .hash, .note-list time { color: var(--muted); font-family: var(--font-meta); font-size: 13px; line-height: 1.35; text-transform: uppercase; }
+    h1 { max-width: 11ch; margin: 0; font-family: var(--font-display); font-size: clamp(44px, 10vw, 118px); font-weight: 900; line-height: 0.86; letter-spacing: 0; text-transform: uppercase; }
+    article { display: grid; gap: 22px; padding: 34px 0; border-bottom: 1px solid var(--rule); }
+    article h2, article h3, article h4 { margin: 10px 0 0; color: var(--red); font-family: var(--font-meta); font-size: 15px; line-height: 1.3; text-transform: uppercase; }
+    p, li { font-size: clamp(16px, 2vw, 20px); line-height: 1.45; }
+    p { margin: 0; }
+    ul, ol { display: grid; gap: 8px; margin: 0; padding-left: 1.25em; }
+    pre { margin: 0; padding: 16px; overflow: auto; border: 1px solid var(--rule); background: var(--pale); font: 700 14px/1.45 var(--font-body); }
+    blockquote { margin: 0; padding-left: 18px; border-left: 4px solid var(--red); }
+    .hash { display: grid; gap: 6px; max-width: 100%; overflow-wrap: anywhere; padding: 14px 0 0; border-top: 1px solid var(--rule); }
+    .note-list { display: grid; gap: 18px; margin: 0; padding: 34px 0; list-style: none; border-bottom: 1px solid var(--rule); }
+    .note-list li { display: grid; gap: 6px; }
+    .note-list a { font-size: clamp(20px, 3vw, 32px); line-height: 1.05; text-transform: uppercase; }
+    footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; padding-top: 16px; }
+    """.replace("__PREFIX__", prefix)
+
+
+def html_page(title: str, description: str, body: str, *, depth: int = 1) -> bytes:
+    prefix = "../" * depth
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light only">
+  <title>{html.escape(title)} | Marx Compute Club</title>
+  <meta name="description" content="{html.escape(description, quote=True)}">
+  <link rel="icon" href="{prefix}favicon.svg" type="image/svg+xml">
+  <style>{page_css(prefix)}</style>
+</head>
+<body>
+  <main>
+{body}
+  </main>
+</body>
+</html>
+""".encode("utf-8")
+
+
+def render_note(path: Path) -> dict[str, Any]:
+    source_bytes = path.read_bytes()
+    source_sha256 = sha256_bytes(source_bytes)
+    text = source_bytes.decode("utf-8")
+    metadata, body_lines = parse_metadata(text)
+    title = metadata.get("TITLE") or path.stem.replace("-", " ").title()
+    slug = slugify(metadata.get("SLUG") or metadata.get("UID") or title)
+    uid = metadata.get("UID") or slug
+    date = metadata.get("DATE", "")
+    summary = metadata.get("SUMMARY", "")
+    body_html = render_org_body(body_lines)
+    body_sha256 = sha256_bytes(body_html.encode("utf-8"))
+    version = source_sha256[:16]
+
+    note_body = f"""    <header>
+      <p class="eyebrow"><a href="../../index.html">Marx Compute Club</a> / <a href="../index.html">Source Notes</a></p>
+      <h1>{html.escape(title)}</h1>
+      <p class="meta">{html.escape(date or "undated")} / {html.escape(uid)}</p>
+    </header>
+    <article>
+{body_html}
+    </article>
+    <section class="hash" aria-label="Provenance">
+      <span>source sha256: {source_sha256}</span>
+      <span>body html sha256: {body_sha256}</span>
+      <span>renderer: {RENDERER_NAME} {RENDERER_VERSION}</span>
+      <span>version path: <a href="{version}.html">{version}.html</a></span>
+    </section>
+    <footer>
+      <span>marxcompute.club</span>
+      <span><a href="../../index.html">Home</a></span>
+      <span><a href="../index.json">Index JSON</a></span>
+      <span>M-C-M' / M-C-C</span>
+    </footer>
+"""
+    page = html_page(title, summary or title, note_body, depth=2)
+    current_path = OUT_DIR / slug / "index.html"
+    version_path = OUT_DIR / slug / f"{version}.html"
+    write_bytes(current_path, page)
+    write_bytes(version_path, page)
+
+    note = {
+        "uid": uid,
+        "slug": slug,
+        "title": title,
+        "date": date,
+        "summary": summary,
+        "source_path": str(path.relative_to(ROOT)),
+        "current_path": f"source-notes/{slug}/index.html",
+        "version_path": f"source-notes/{slug}/{version}.html",
+        "source_sha256": source_sha256,
+        "body_html_sha256": body_sha256,
+        "html_sha256": sha256_bytes(page),
+        "renderer": {
+            "name": RENDERER_NAME,
+            "version": RENDERER_VERSION,
+        },
+    }
+    provenance = stable_json(note)
+    write_bytes(OUT_DIR / slug / "provenance.json", provenance)
+    write_bytes(OUT_DIR / slug / "provenance.sha256", (sha256_bytes(provenance) + "\n").encode("ascii"))
+    return note
+
+
+def render_index(notes: list[dict[str, Any]], manifest_sha256: str) -> None:
+    if notes:
+        items = "\n".join(
+            f'      <li><a href="{note["slug"]}/">{html.escape(note["title"])}</a>'
+            f'<time>{html.escape(note.get("date") or "undated")}</time>'
+            f'<span class="hash">source sha256: {note["source_sha256"]}</span></li>'
+            for note in notes
+        )
+    else:
+        items = '      <li><span>No source notes published yet.</span></li>'
+
+    body = f"""    <header>
+      <p class="eyebrow"><a href="../index.html">Marx Compute Club</a></p>
+      <h1>Source Notes</h1>
+      <p class="meta">Versioned Org source / reproducible render path.</p>
+    </header>
+    <ul class="note-list">
+{items}
+    </ul>
+    <section class="hash" aria-label="Manifest">
+      <span>manifest sha256: {manifest_sha256}</span>
+      <span>renderer: {RENDERER_NAME} {RENDERER_VERSION}</span>
+      <span><a href="index.json">index.json</a></span>
+      <span><a href="manifest.sha256">manifest.sha256</a></span>
+    </section>
+    <footer>
+      <span>marxcompute.club</span>
+      <span><a href="../index.html">Home</a></span>
+      <span><a href="../privacy.html">Privacy</a></span>
+      <span><a href="../terms.html">Terms</a></span>
+      <span>M-C-M' / M-C-C</span>
+    </footer>
+"""
+    write_bytes(
+        OUT_DIR / "index.html",
+        html_page("Source Notes", "Versioned MCC source notes rendered from Org.", body, depth=1),
+    )
+
+
+def main() -> int:
+    if OUT_DIR.exists():
+        shutil.rmtree(OUT_DIR)
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    SOURCE_DIR.mkdir(parents=True, exist_ok=True)
+
+    source_files = sorted(
+        path
+        for path in SOURCE_DIR.glob("*.org")
+        if not path.name.startswith(".") and not path.name.startswith("_")
+    )
+    notes = [render_note(path) for path in source_files]
+    manifest = {
+        "schema": "marxcompute.club/source-notes-manifest/v1",
+        "renderer": {
+            "name": RENDERER_NAME,
+            "version": RENDERER_VERSION,
+            "python": sys.version.split()[0],
+        },
+        "source_directory": "source-notes",
+        "output_directory": "source-notes",
+        "notes": notes,
+    }
+    manifest_bytes = stable_json(manifest)
+    manifest_sha256 = sha256_bytes(manifest_bytes)
+    write_bytes(OUT_DIR / "index.json", manifest_bytes)
+    write_bytes(OUT_DIR / "manifest.sha256", (manifest_sha256 + "\n").encode("ascii"))
+    render_index(notes, manifest_sha256)
+    print(f"rendered {len(notes)} source notes")
+    print(f"manifest sha256: {manifest_sha256}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
