@@ -1,0 +1,150 @@
+#+TITLE: Platform and Protocol
+#+UID: platform-and-protocol
+#+SLUG: platform-and-protocol
+#+DATE: 2026-05-31
+#+SUMMARY: A source note on platform engineering, protocolism, commodity execution, semantic capital, and the cost structure of MCC infrastructure.
+#+OPTIONS: toc:nil num:nil
+
+* PLATFORM AND PROTOCOL.
+
+SaaS is dead, so they say. Good. Feed off its carcass.
+
+The SaaS era was structurally important to the growth of free software. It
+produced signals, initiatives, patronage, and operational forms: SSO,
+zero-trust architecture under real conditions, granular access control,
+reproducible orchestrated workloads, deployment discipline, observability, and
+internal platform engineering.
+
+Externally, the platform hypostasizes itself as a singular subject. Internally,
+it is a loose topology stitched together by identity, authorization, policy,
+observability, workload orchestration, capital controls, and protocols that
+never resolve into one. There is no protocol to rule them all. There are many:
+old and new, formal and informal, internal and external, documented and
+half-remembered.
+
+This is why platform engineering becomes the continuous, durable core of
+capitalist software. Protocol shifts are costly paradigm shifts; the platform
+absorbs protocol multiplicity and makes it operable for an organization. In
+art, theory, and crypto, "protocol" is too often asked to stand in for missing
+labor, missing expertise, and missing governance.
+
+Platform engineering is not merely a specialty. It is the mature form of
+software labor under capital. With enough seniority, every serious engineer is
+forced toward it, title or not. It also tends away from the craft core, because
+capital is already the craft. The work is orchestration: access, dependency,
+deployment, reliability, security, observability, cost, and developer
+throughput.
+
+This is why platform engineering is unusually emboldened by model-mediated
+production. The role already governs through abstraction, generated
+configuration, runbooks, dashboards, vendors, scripts, policies, and incident
+traces. It sits close to capital allocation: cloud spend, storage, build
+minutes, inference, uptime, security posture, and organizational throughput all
+pass through the platform surface.
+
+MCC starts from this platform surface because it is the everyday reality where
+software infrastructure becomes governable. But it refuses to stop there. The
+goal is to open the beast and show the guts: deconstruct the platform by
+construction.
+
+Even federated and decentralized protocols need seeders, pinned data, operators,
+keys, backups, abuse policy, and maintenance. Software requires compilers, build
+systems, dependency resolution, caches, and persistent data stores. State cannot
+be waived away by networked magic. It can sometimes be shepherded between
+executors, stabilized at boundaries, or replicated through protocol, but it
+still has to live somewhere.
+
+Some dependencies can be protocolized. Others remain obligations: payment,
+maintenance, recovery, trust, cost, and risk. The world of software cannot
+levitate autopoietically. It requires ground. Thus the platform remains a
+critical form for mediating internal execution and external decentralization.
+Infrastructure still has to be bootstrapped and maintained despite protocolist
+idealism. The dialectic between centralization and decentralization, platform and
+protocol, is not a slogan. It is a build problem.
+
+SaaS and the enterprise are often structurally ignorant of free software, except
+where it appears as compliance-friendly, permissively licensed building blocks.
+Otherwise, they pick services off the shelf to run their own SaaS when
+self-hosting would be too organizationally costly. The deeper lesson is not that
+self-deployment is always immediately cheaper. It is that self-deployment
+becomes strategically preferable when amortization, skill, and scale allow it.
+
+For now, it is cheaper to subscribe to Claude than deploy your own frontier
+model. But as hosted services rise in cost and harden into enclosure, running
+your own software becomes attractive again. Eventually, domain over hardware will
+matter too.
+
+MCC cannot afford owned hardware or real network infrastructure yet. Fine. Start
+with virtualized infrastructure that can be ported into deeper critical layers
+over time. Finesse the stack. Do not throw your hands up.
+
+* COMMODITY EXECUTION. SEMANTIC CAPITAL.
+
+As of May 2026, MCC pre-launch accounting already shows the split.
+
+Our bundle of commodity Hetzner servers costs less than $50/mo. That is enough
+to host the surface: source, chat, identity, publication, and seeds.
+
+Frontier model access costs about $200/mo to really rip. Useful inference will
+get cheaper, local models will improve, and Chinese providers are already
+putting pressure on American frontier pricing. But the asymmetry matters. It
+shows where the new dependency sits.
+
+Development was never cheap. Open source repressed that cost through patronage,
+prestige, employment spillover, institutional subsidy, maintainer sacrifice, and
+influence.
+
+A craft mode of software production lived inside an industrialized, subsumed
+economy. That contradiction could hold while source remained difficult to
+operate.
+
+Models attack the craft bottleneck. They make source production cheaper, more
+generalizable, and more directly available through semantic feedback. The craft
+operation does not disappear; it moves up layers, or becomes boutique.
+
+This reorganizes human-computer interaction itself.
+
+Western software hegemony depended on scarce craft, English-dominant source
+culture, platform distribution, concentrated compute, and software's growing
+role in social reproduction.
+
+The internet took decades to diffuse because the network itself had to be built.
+This time the network is already there. Model-mediated use can tolerate
+batching, delay, interruption, remote compute, and queued work.
+
+Inference can be pooled, brokered, subsidized, or sold below cost across the
+world market.
+
+Billions of devices use the operating substrate to coax users through
+proprietary interfaces, stashing lower-level complexity. Language models can
+operate over that substrate directly through semantic feedback, a capacity
+previously available mostly to skilled users through mastery.
+
+Instead of merely dulling the user and hiding power behind a chatbot, capital
+may prefer the alternative path: arbitrage the historically misutilized
+operating system and raise user productivity. We should steer toward the latter,
+at least, because it is far more historically progressive. It will require wide
+access to source and infrastructure, against the rent-seeking mode that is
+proving too costly to defend.
+
+The likely mass form is hybrid. Voice-controlled computer use will grow,
+especially for ambient delegation and low-friction command. But voice is a
+low-bandwidth, serial, socially exposed interface. It is structurally weak for
+precision, inspection, debugging, composition, and recovery.
+
+The old imperative interface at least trained the user's memory into a weak
+form of reproducibility. Opaque model control can destroy even that, replacing
+learned operation with invisible clicking. The progressive form is not voice
+over a sealed machine. It is voice, chat, and semantic feedback routed into
+durable traces: source, plans, logs, diffs, commands, workflows, and recoverable
+state.
+
+Even if capital chooses operating-system arbitrage over chatbot pacification,
+managed environments could still be ruled with a tightened fist and brainwashed
+models. The risks of opening user operating systems to remote minions are
+obvious. There will be risk, failure, and slop. The alternative is managed
+enclosure.
+
+The historically progressive path is not safer magic. It is a more general
+communist substrate: source, instruction, reproducible environments, delegated
+access, and recoverable failure.
