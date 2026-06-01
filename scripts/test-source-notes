@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+
+export MCC_BUILD_REVISION="fixture"
+export MCC_BUILD_DIRTY="false"
+
+for run in one two; do
+  mkdir -p "$tmp/$run/dist"
+  MCC_SOURCE_NOTES_DIR="$repo_root/tests/fixtures/source-notes" \
+    MCC_DIST_DIR="$tmp/$run/dist" \
+    python3 "$repo_root/scripts/render-source-notes" > "$tmp/$run/render.log"
+done
+
+diff -ru "$tmp/one/dist/source-notes" "$tmp/two/dist/source-notes"
+
+actual="$(sha256sum "$tmp/one/dist/source-notes/index.json" | awk '{print $1}')"
+echo "fixture manifest sha256: $actual"
+test -s "$tmp/one/dist/source-notes/fixture-source-note/index.html"
+test -s "$tmp/one/dist/source-notes/fixture-source-note/provenance.json"

@@ -9,14 +9,23 @@
     };
   };
 
-  outputs = { nixpkgs, llm-agents, ... }:
+  outputs = { self, nixpkgs, llm-agents, ... }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
       agents = llm-agents.packages.${system};
+      buildRevision =
+        if self ? rev then self.rev
+        else if self ? dirtyRev then self.dirtyRev
+        else "unknown";
+      buildDirty =
+        if self ? dirtyRev then "true"
+        else if self ? rev then "false"
+        else "unknown";
       siteBuild = pkgs.writeShellApplication {
         name = "mcc-build-site";
         runtimeInputs = [
+          pkgs.bash
           pkgs.coreutils
           pkgs.git
           pkgs.python3
@@ -28,7 +37,7 @@
           fi
 
           cd "$repo_root"
-          exec scripts/build-site "$@"
+          exec bash scripts/build-site "$@"
         '';
       };
       site = pkgs.stdenvNoCC.mkDerivation {
@@ -36,18 +45,41 @@
         version = "0.1.0";
         src = ./.;
         nativeBuildInputs = [
+          pkgs.bash
           pkgs.python3
         ];
         buildPhase = ''
           runHook preBuild
-          patchShebangs scripts
-          scripts/build-site
+          export MCC_BUILD_REVISION="${buildRevision}"
+          export MCC_BUILD_DIRTY="${buildDirty}"
+          bash scripts/build-site
           runHook postBuild
         '';
         installPhase = ''
           runHook preInstall
           mkdir -p "$out"
           cp -R dist/. "$out/"
+          runHook postInstall
+        '';
+      };
+      sourceNotesFixture = pkgs.stdenvNoCC.mkDerivation {
+        pname = "mcc-source-notes-fixture";
+        version = "0.1.0";
+        src = ./.;
+        nativeBuildInputs = [
+          pkgs.bash
+          pkgs.diffutils
+          pkgs.python3
+        ];
+        buildPhase = ''
+          runHook preBuild
+          bash scripts/test-source-notes
+          runHook postBuild
+        '';
+        installPhase = ''
+          runHook preInstall
+          mkdir -p "$out"
+          echo ok > "$out/result"
           runHook postInstall
         '';
       };
@@ -85,7 +117,10 @@
         dns-tofu = dnsTofu;
       };
 
-      checks.${system}.site = site;
+      checks.${system} = {
+        site = site;
+        source-notes-fixture = sourceNotesFixture;
+      };
 
       apps.${system} = {
         build-site = {

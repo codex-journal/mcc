@@ -1,0 +1,21 @@
+#+TITLE: Fixture Source Note
+#+UID: fixture-source-note
+#+DATE: 2026-05-31
+#+SUMMARY: Fixture for deterministic source-note rendering.
+
+This fixture is not a published note. It exists to prove that the renderer
+produces stable output from Org source.
+
+* Section
+
+- one
+- two
+
+#+begin_quote
+Quoted material should remain structurally stable.
+#+end_quote
+
+#+begin_src text
+M-C-M'
+M-C-C
+#+end_src

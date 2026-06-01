@@ -4,17 +4,20 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import os
 import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE_DIR = ROOT / "source-notes"
-DIST_DIR = ROOT / "dist"
-OUT_DIR = DIST_DIR / "source-notes"
+SOURCE_DIR = Path(os.environ.get("MCC_SOURCE_NOTES_DIR", ROOT / "source-notes"))
+DIST_DIR = Path(os.environ.get("MCC_DIST_DIR", ROOT / "dist"))
+OUT_DIR = Path(os.environ.get("MCC_SOURCE_NOTES_OUT_DIR", DIST_DIR / "source-notes"))
+PUBLIC_OUT_DIR = os.environ.get("MCC_PUBLIC_SOURCE_NOTES_DIR", "source-notes")
 RENDERER_NAME = "mcc-org-source-note-renderer"
 RENDERER_VERSION = "0.1.0"
 
@@ -33,6 +36,57 @@ def stable_json(value: Any) -> bytes:
 def write_bytes(path: Path, value: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(value)
+
+
+def relative_to_root(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT.resolve()))
+    except ValueError:
+        return str(path)
+
+
+def file_sha256(path: Path) -> str | None:
+    if not path.exists():
+        return None
+    return sha256_bytes(path.read_bytes())
+
+
+def git_value(args: list[str]) -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", *args],
+            cwd=ROOT,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return None
+    value = result.stdout.strip()
+    return value or None
+
+
+def build_metadata() -> dict[str, Any]:
+    revision = (
+        os.environ.get("MCC_BUILD_REVISION")
+        or os.environ.get("SOURCE_DATE_EPOCH_REVISION")
+        or git_value(["rev-parse", "HEAD"])
+    )
+    dirty = os.environ.get("MCC_BUILD_DIRTY")
+    if dirty is None:
+        status = git_value(["status", "--porcelain"])
+        dirty = "unknown" if status is None else str(bool(status)).lower()
+    return {
+        "schema": "marxcompute.club/source-notes-build/v1",
+        "revision": revision,
+        "dirty": dirty,
+        "flake_lock_sha256": file_sha256(ROOT / "flake.lock"),
+        "renderer_source_sha256": file_sha256(Path(__file__).resolve()),
+        "renderer_path": relative_to_root(Path(__file__).resolve()),
+        "source_directory": relative_to_root(SOURCE_DIR),
+        "output_directory": PUBLIC_OUT_DIR,
+    }
 
 
 def slugify(value: str) -> str:
@@ -254,7 +308,7 @@ def html_page(title: str, description: str, body: str, *, depth: int = 1) -> byt
 """.encode("utf-8")
 
 
-def render_note(path: Path) -> dict[str, Any]:
+def render_note(path: Path, build: dict[str, Any]) -> dict[str, Any]:
     source_bytes = path.read_bytes()
     source_sha256 = sha256_bytes(source_bytes)
     text = source_bytes.decode("utf-8")
@@ -279,6 +333,9 @@ def render_note(path: Path) -> dict[str, Any]:
     <section class="hash" aria-label="Provenance">
       <span>source sha256: {source_sha256}</span>
       <span>body html sha256: {body_sha256}</span>
+      <span>renderer source sha256: {build.get("renderer_source_sha256") or "unknown"}</span>
+      <span>flake.lock sha256: {build.get("flake_lock_sha256") or "unknown"}</span>
+      <span>git revision: {build.get("revision") or "unknown"}</span>
       <span>renderer: {RENDERER_NAME} {RENDERER_VERSION}</span>
       <span>version path: <a href="{version}.html">{version}.html</a></span>
     </section>
@@ -301,7 +358,7 @@ def render_note(path: Path) -> dict[str, Any]:
         "title": title,
         "date": date,
         "summary": summary,
-        "source_path": str(path.relative_to(ROOT)),
+        "source_path": relative_to_root(path),
         "current_path": f"source-notes/{slug}/index.html",
         "version_path": f"source-notes/{slug}/{version}.html",
         "source_sha256": source_sha256,
@@ -310,7 +367,9 @@ def render_note(path: Path) -> dict[str, Any]:
         "renderer": {
             "name": RENDERER_NAME,
             "version": RENDERER_VERSION,
+            "source_sha256": build.get("renderer_source_sha256"),
         },
+        "build": build,
     }
     provenance = stable_json(note)
     write_bytes(OUT_DIR / slug / "provenance.json", provenance)
@@ -318,7 +377,7 @@ def render_note(path: Path) -> dict[str, Any]:
     return note
 
 
-def render_index(notes: list[dict[str, Any]], manifest_sha256: str) -> None:
+def render_index(notes: list[dict[str, Any]], manifest_sha256: str, build: dict[str, Any]) -> None:
     if notes:
         items = "\n".join(
             f'      <li><a href="{note["slug"]}/">{html.escape(note["title"])}</a>'
@@ -339,6 +398,9 @@ def render_index(notes: list[dict[str, Any]], manifest_sha256: str) -> None:
     </ul>
     <section class="hash" aria-label="Manifest">
       <span>manifest sha256: {manifest_sha256}</span>
+      <span>renderer source sha256: {build.get("renderer_source_sha256") or "unknown"}</span>
+      <span>flake.lock sha256: {build.get("flake_lock_sha256") or "unknown"}</span>
+      <span>git revision: {build.get("revision") or "unknown"}</span>
       <span>renderer: {RENDERER_NAME} {RENDERER_VERSION}</span>
       <span><a href="index.json">index.json</a></span>
       <span><a href="manifest.sha256">manifest.sha256</a></span>
@@ -368,23 +430,27 @@ def main() -> int:
         for path in SOURCE_DIR.glob("*.org")
         if not path.name.startswith(".") and not path.name.startswith("_")
     )
-    notes = [render_note(path) for path in source_files]
+    build = build_metadata()
+    notes = [render_note(path, build) for path in source_files]
     manifest = {
         "schema": "marxcompute.club/source-notes-manifest/v1",
+        "build": build,
         "renderer": {
             "name": RENDERER_NAME,
             "version": RENDERER_VERSION,
             "python": sys.version.split()[0],
+            "source_sha256": build.get("renderer_source_sha256"),
         },
-        "source_directory": "source-notes",
-        "output_directory": "source-notes",
+        "source_directory": relative_to_root(SOURCE_DIR),
+        "output_directory": PUBLIC_OUT_DIR,
         "notes": notes,
     }
     manifest_bytes = stable_json(manifest)
     manifest_sha256 = sha256_bytes(manifest_bytes)
     write_bytes(OUT_DIR / "index.json", manifest_bytes)
     write_bytes(OUT_DIR / "manifest.sha256", (manifest_sha256 + "\n").encode("ascii"))
-    render_index(notes, manifest_sha256)
+    write_bytes(OUT_DIR / "build.json", stable_json(build))
+    render_index(notes, manifest_sha256, build)
     print(f"rendered {len(notes)} source notes")
     print(f"manifest sha256: {manifest_sha256}")
     return 0
