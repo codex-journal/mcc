@@ -60,7 +60,8 @@ levitate autopoietically. It requires ground. Thus the platform remains a
 critical form for mediating internal execution and external decentralization.
 Infrastructure still has to be bootstrapped and maintained despite protocolist
 idealism. The dialectic between centralization and decentralization, platform and
-protocol, is not a slogan. It is a build problem.
+protocol, is forced to reveal itself through the obligations created by development
+and deployment of actually existing software.
 
 SaaS and the enterprise are often structurally ignorant of free software, except
 where it appears as compliance-friendly, permissively licensed building blocks.
