@@ -2,7 +2,7 @@
 #+UID: platform-and-protocol
 #+SLUG: platform-and-protocol
 #+DATE: 2026-05-31
-#+SUMMARY: A source note on platform engineering, protocolism, commodity execution, semantic capital, and the cost structure of MCC infrastructure.
+#+SUMMARY: A microessay on platform engineering, protocolism, commodity execution, semantic capital, and the cost structure of MCC infrastructure.
 #+OPTIONS: toc:nil num:nil
 
 * PLATFORM AND PROTOCOL.
@@ -54,13 +54,11 @@ be waived away by networked magic. It can sometimes be shepherded between
 executors, stabilized at boundaries, or replicated through protocol, but it
 still has to live somewhere.
 
-Some dependencies can be protocolized. Others remain obligations: payment,
-maintenance, recovery, trust, cost, and risk. The world of software cannot
-yet levitate autopoietically. It requires ground. Thus the platform remains a
+The world of software cannot yet levitate autopoietically. It requires ground. The platform remains a
 critical form for mediating internal execution and external decentralization.
 Infrastructure still has to be bootstrapped and maintained despite protocolist
 idealism. The dialectic between centralization and decentralization, platform and
-protocol, is forced to reveal itself through the obligations created by development
+protocol, is forced to reveal itself through the obligations created in the development
 and deployment of actually existing software.
 
 SaaS and the enterprise are often structurally ignorant of free software, except
