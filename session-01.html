@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark only">
+  <title>RSVP Signal | Marx Compute Club</title>
+  <meta name="description" content="RSVP for the first Marx Compute Club session in NYC.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    @font-face {
+      font-family: "MCC Display";
+      src: url("./assets/fonts/AdwaitaSans-Regular.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "MCC Mono";
+      src: url("./assets/fonts/LiberationMono-Bold.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "MCC Meta";
+      src: url("./assets/fonts/AdwaitaMono-Bold.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    :root {
+      --field: #b6b6b6;
+      --panel: #050505;
+      --panel-soft: #0b0b0b;
+      --ink: #f7f5ee;
+      --muted: #aaa49b;
+      --rule: #7a746a;
+      --red: #9d1414;
+      --font-display: "MCC Display", "Adwaita Sans", Arial, Helvetica, sans-serif;
+      --font-body: "MCC Mono", "Liberation Mono", "Courier New", monospace;
+      --font-meta: "MCC Meta", "Adwaita Mono", "Liberation Mono", monospace;
+      color-scheme: only dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.14) 1px, transparent 1px),
+        var(--field);
+      background-size: 96px 96px;
+      color: var(--ink);
+      font-family: var(--font-body);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    main {
+      width: min(920px, 100%);
+      margin: 0 auto;
+      padding: 42px 28px;
+    }
+
+    .rsvp-card {
+      display: grid;
+      border: 1px solid var(--rule);
+      background: var(--panel);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.24);
+    }
+
+    .card-head {
+      display: grid;
+      gap: 14px;
+      padding: clamp(28px, 5vw, 46px);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+      color: var(--muted);
+      font-family: var(--font-meta);
+      font-size: clamp(13px, 2.2vw, 16px);
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(54px, 11vw, 112px);
+      font-weight: 900;
+      font-synthesis-weight: none;
+      line-height: 0.86;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .card-body {
+      display: grid;
+      gap: 28px;
+      padding: clamp(28px, 5vw, 46px);
+      background: var(--panel-soft);
+    }
+
+    form {
+      display: grid;
+      gap: 24px;
+    }
+
+    .field {
+      display: grid;
+      gap: 10px;
+    }
+
+    label,
+    .field-label {
+      color: var(--muted);
+      font-family: var(--font-meta);
+      font-size: clamp(17px, 3vw, 26px);
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    input,
+    button {
+      width: 100%;
+      min-height: 66px;
+      border: 1px solid var(--rule);
+      border-radius: 0;
+      background: transparent;
+      color: var(--ink);
+      font: 700 clamp(18px, 3vw, 28px)/1 var(--font-meta);
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    input {
+      padding: 0 22px;
+    }
+
+    input::placeholder {
+      color: var(--muted);
+      opacity: 1;
+    }
+
+    input:focus,
+    button:focus,
+    .checkline:focus-within {
+      outline: 2px solid var(--ink);
+      outline-offset: 3px;
+    }
+
+    .hp {
+      display: none;
+    }
+
+    .checkline {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+      padding: 22px;
+      border: 1px solid var(--rule);
+    }
+
+    .checkline input {
+      width: 54px;
+      height: 54px;
+      min-height: 0;
+      margin: 0;
+      accent-color: var(--ink);
+    }
+
+    .checkline span {
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: clamp(20px, 3.6vw, 32px);
+      line-height: 1.22;
+      text-transform: none;
+    }
+
+    .turnstile-shell {
+      height: 0;
+      min-height: 0;
+      overflow: hidden;
+      opacity: 0;
+    }
+
+    .turnstile-shell[hidden] {
+      display: none;
+    }
+
+    .turnstile-shell[data-interactive="true"] {
+      height: auto;
+      min-height: 65px;
+      overflow: visible;
+      opacity: 1;
+    }
+
+    button {
+      cursor: pointer;
+      min-height: 76px;
+      background: transparent;
+      color: var(--ink);
+    }
+
+    button:disabled {
+      cursor: wait;
+      color: var(--muted);
+      border-color: var(--muted);
+    }
+
+    .note,
+    .form-status {
+      margin: 0;
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: clamp(18px, 3vw, 28px);
+      line-height: 1.3;
+    }
+
+    .form-status {
+      min-height: 1.3em;
+    }
+
+    .form-status[data-state="error"] {
+      color: #ff6f6f;
+    }
+
+    .footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      padding-top: 16px;
+      color: #2f2f2f;
+      font-family: var(--font-meta);
+      font-size: 13px;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 620px) {
+      main {
+        padding: 24px;
+      }
+
+      .card-head,
+      .card-body {
+        padding: 24px;
+      }
+
+      .checkline {
+        gap: 16px;
+        padding: 18px;
+      }
+
+      .checkline input {
+        width: 44px;
+        height: 44px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="rsvp-card" aria-labelledby="rsvp-title">
+      <header class="card-head">
+        <div class="meta-row">
+          <span>Marx Compute Club</span>
+          <span>June 25 / NYC</span>
+        </div>
+        <h1 id="rsvp-title">RSVP Signal.</h1>
+      </header>
+
+      <div class="card-body">
+        <form id="rsvp-form" action="/api/rsvp" method="post">
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="email" autocomplete="email" required>
+          </div>
+
+          <div class="field">
+            <label for="name-handle">Name / handle</label>
+            <input id="name-handle" name="name_handle" type="text" placeholder="name / handle" autocomplete="name" maxlength="160">
+          </div>
+
+          <label class="checkline" for="community-opt-in">
+            <input id="community-opt-in" name="community_opt_in" type="checkbox" value="1">
+            <span>Also request an optional invitation to the MCC microplatform.</span>
+          </label>
+
+          <input class="hp" name="company" type="text" tabindex="-1" autocomplete="off">
+          <input name="event" type="hidden" value="first-session">
+          <input name="source" type="hidden" value="session-01">
+          <input id="turnstile-token" name="cf-turnstile-response" type="hidden">
+
+          <div class="turnstile-shell" id="turnstile-shell" hidden>
+            <div id="turnstile-widget"></div>
+          </div>
+
+          <button type="submit">RSVP</button>
+          <p class="form-status" id="rsvp-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <p class="note">RSVP helps size the room and route venue updates. It is not a gate.</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span><a href="index.html">marxcompute.club</a></span>
+      <span><a href="privacy.html">Privacy</a></span>
+      <span><a href="terms.html">Terms</a></span>
+      <span>M-C-C</span>
+    </footer>
+  </main>
+
+  <script>
+    const form = document.querySelector("#rsvp-form");
+    const status = document.querySelector("#rsvp-status");
+    const button = form.querySelector("button");
+    const turnstileShell = document.querySelector("#turnstile-shell");
+    const turnstileToken = document.querySelector("#turnstile-token");
+    let turnstileEnabled = false;
+    let turnstileWidgetId = null;
+    let pendingTurnstileSubmit = false;
+    button.disabled = true;
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      status.textContent = "";
+      status.removeAttribute("data-state");
+
+      if (turnstileEnabled && !turnstileToken.value) {
+        pendingTurnstileSubmit = true;
+        button.disabled = true;
+        status.textContent = "Verification required.";
+        turnstileShell.dataset.interactive = "true";
+        try {
+          window.turnstile.execute(turnstileWidgetId);
+        } catch {
+          pendingTurnstileSubmit = false;
+          status.dataset.state = "error";
+          status.textContent = "Verification failed. Try again.";
+          button.disabled = false;
+        }
+        return;
+      }
+
+      await submitRsvp();
+    });
+
+    setupTurnstile().finally(() => {
+      button.disabled = false;
+    });
+
+    async function submitRsvp() {
+      button.disabled = true;
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { "Accept": "application/json" }
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || "RSVP failed");
+        }
+        form.reset();
+        status.textContent = payload.message || "RSVP received.";
+      } catch (error) {
+        status.dataset.state = "error";
+        status.textContent = error.message || "RSVP failed.";
+      } finally {
+        resetTurnstile();
+        button.disabled = false;
+      }
+    }
+
+    async function setupTurnstile() {
+      const config = await fetchConfig();
+      if (!config.turnstileSiteKey) {
+        return;
+      }
+
+      turnstileShell.hidden = false;
+      try {
+        await loadTurnstile();
+      } catch {
+        turnstileEnabled = false;
+        turnstileShell.hidden = true;
+        return;
+      }
+
+      turnstileWidgetId = window.turnstile.render("#turnstile-widget", {
+        sitekey: config.turnstileSiteKey,
+        theme: "dark",
+        appearance: "execute",
+        execution: "execute",
+        size: "flexible",
+        "feedback-enabled": false,
+        callback: async (token) => {
+          turnstileToken.value = token;
+          turnstileShell.removeAttribute("data-interactive");
+          if (pendingTurnstileSubmit) {
+            pendingTurnstileSubmit = false;
+            await submitRsvp();
+          }
+        },
+        "before-interactive-callback": () => {
+          turnstileShell.dataset.interactive = "true";
+        },
+        "after-interactive-callback": () => {
+          turnstileShell.removeAttribute("data-interactive");
+        },
+        "expired-callback": () => {
+          turnstileToken.value = "";
+        },
+        "error-callback": () => {
+          pendingTurnstileSubmit = false;
+          turnstileToken.value = "";
+          turnstileShell.dataset.interactive = "true";
+          status.dataset.state = "error";
+          status.textContent = "Verification failed. Try again.";
+          button.disabled = false;
+        }
+      });
+      turnstileEnabled = true;
+    }
+
+    async function fetchConfig() {
+      try {
+        const response = await fetch("/api/config", { headers: { "Accept": "application/json" } });
+        if (!response.ok) {
+          return {};
+        }
+        return response.json();
+      } catch {
+        return {};
+      }
+    }
+
+    function loadTurnstile() {
+      if (window.turnstile) {
+        return Promise.resolve();
+      }
+
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+        script.async = true;
+        script.defer = true;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    function resetTurnstile() {
+      pendingTurnstileSubmit = false;
+      turnstileToken.value = "";
+      turnstileShell.removeAttribute("data-interactive");
+      if (window.turnstile && turnstileWidgetId !== null) {
+        window.turnstile.reset(turnstileWidgetId);
+      }
+    }
+  </script>
+</body>
+</html>

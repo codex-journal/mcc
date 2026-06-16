@@ -1,10 +1,22 @@
-# MCC Signup Flow
+# MCC Signup And RSVP Flow
 
 The signup form posts to `/api/signup`, a Cloudflare Pages Function under
 `functions/api/signup.js`.
 
-The first source of truth is D1 via the `MCC_DB` binding. Resend sync is
-optional and only runs when `RESEND_API_KEY` is present.
+The first source of truth for the public announcement list and event RSVPs is
+D1 via the `MCC_DB` binding. Resend sync is optional and only runs for the
+announcement signup path when `RESEND_API_KEY` is present.
+
+Public D1 deliberately uses `subscribers` and `signup_events` for the
+announcement/update list. It does not use the id-01 `community_users` table.
+The id-01 store is the canonical identity/community store; D1 is the public
+intake and fallback collection ledger.
+
+Event RSVPs use separate `mcc_events` and `event_rsvps` tables. An RSVP-only
+record does not create an MCC identity account and does not subscribe the user
+to broadcasts. The `event_rsvps.community_opt_in` flag means the user requested
+an optional MCC microplatform invitation; a later id-01 sync job may consume
+that consent and create or link a canonical community record.
 
 ## Local Test
 
@@ -13,17 +25,28 @@ local `workerd` runs correctly on NixOS.
 
 ```bash
 nix develop
-wrangler d1 migrations apply mcc-signups --local --config wrangler.local.jsonc
-wrangler pages dev . --config wrangler.local.jsonc
+CI=true wrangler d1 migrations apply mcc-signups --local --config wrangler.local.jsonc --persist-to .wrangler/state-rsvp
+wrangler pages dev . --binding SIGNUP_ENV=local --port 8788 --persist-to .wrangler/state-rsvp
 ```
 
 In another shell:
 
 ```bash
 node scripts/test-signup.mjs
+node scripts/test-rsvp.mjs
+node scripts/test-rsvp-worker.mjs
 ```
 
 Open `http://127.0.0.1:8788` and submit the form to test it in-browser.
+`test-rsvp-worker.mjs` imports the RSVP Pages Function directly and runs the
+upsert path against an in-memory SQLite D1 shim. It is a fast logic test; it
+does not replace a Wrangler Pages smoke test.
+
+Wrangler Pages dev does not currently accept a custom Wrangler config path.
+Use the checked-in default `wrangler.jsonc` binding for Pages smoke tests and
+override only local env vars on the command line. `wrangler.local.jsonc`
+remains useful for direct `wrangler d1 execute` checks against the local
+`mcc-signups` database.
 
 ## Inspect Local D1
 
@@ -41,6 +64,8 @@ For a cleaner operator view, use:
 
 ```bash
 scripts/d1-signups --local
+scripts/d1-rsvps --local
+scripts/d1-rsvps --local --config wrangler.jsonc --persist-to .wrangler/state-rsvp
 ```
 
 ## Inspect Remote D1
@@ -52,6 +77,9 @@ Remote signup inspection uses Wrangler and the production D1 binding from
 scripts/d1-signups
 scripts/d1-signups --limit 100
 scripts/d1-signups --json
+scripts/d1-rsvps
+scripts/d1-rsvps --limit 100
+scripts/d1-rsvps --json
 ```
 
 By default this prints status/source counts, recent subscriber rows, and recent
@@ -173,6 +201,41 @@ sync_error
 Do not treat Resend as canonical. Resend is the delivery layer; D1 is the owned
 list.
 
+## Event RSVP Fields
+
+The public RSVP record is:
+
+```text
+event_id
+email
+name_handle
+status
+community_opt_in
+source
+consent_at
+created_at
+updated_at
+sync_status
+sync_error
+```
+
+`event_rsvps` has a uniqueness constraint on `(event_id, email)`. Repeated RSVP
+submissions update the existing row. If a user has already requested the
+microplatform invitation, a later RSVP without the checkbox does not silently
+remove that consent.
+
+The current public event seed is:
+
+```text
+slug: first-session
+title: First session
+starts_at: 2026-06-25T23:00:00.000Z
+location_label: NYC
+```
+
+Adjust event details through a source-controlled migration or explicit operator
+SQL, not through the RSVP handler.
+
 ## Aggregate Signup Metrics
 
 The signup function updates `signup_metric_rollups` through `context.waitUntil`.
@@ -188,6 +251,13 @@ signup_save_failed
 resend_sync_ok
 resend_sync_fail
 resend_sync_skipped
+rsvp_attempt
+rsvp_honeypot_hit
+rsvp_invalid_email
+rsvp_turnstile_fail
+rsvp_unknown_event
+rsvp_saved
+rsvp_save_failed
 ```
 
 The rollup key is `day`, `event_type`, and sanitized `source`. It does not store

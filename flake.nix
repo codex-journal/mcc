@@ -154,7 +154,7 @@
             echo "Site build: scripts/build-site"
             echo "Source notes: add Org files under source-notes/"
             echo "DNS: cd infra/dns && tofu init && tofu plan"
-            echo "Signup dev: wrangler pages dev . --config wrangler.local.jsonc"
+            echo "Signup dev: wrangler pages dev . --binding SIGNUP_ENV=local --persist-to .wrangler/state-rsvp"
           '';
         };
 

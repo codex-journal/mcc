@@ -4,6 +4,6 @@ set -euo pipefail
 rm -rf dist
 mkdir -p dist
 
-cp index.html privacy.html terms.html favicon.svg dist/
+cp index.html privacy.html terms.html session-01.html favicon.svg dist/
 cp -R assets dist/
 python3 scripts/render-source-notes

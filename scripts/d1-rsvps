@@ -1,0 +1,203 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+database="mcc-signups"
+config="wrangler.jsonc"
+mode="remote"
+limit="50"
+format="table"
+persist_to=""
+
+usage() {
+  cat <<'USAGE'
+Usage: scripts/d1-rsvps [options]
+
+Inspect MCC event RSVP rows in Cloudflare D1.
+
+Options:
+  --local              Query local D1 with wrangler.local.jsonc.
+  --remote             Query remote D1 with wrangler.jsonc. Default.
+  --database NAME      D1 database name to query. Default: mcc-signups.
+  --config PATH        Wrangler config path. Defaults by mode.
+  --persist-to PATH    Local Wrangler persistence directory.
+  --limit N            Number of recent RSVPs to show. Default: 50.
+  --json               Print recent RSVP rows as JSON.
+  -h, --help           Show this help.
+
+Remote usage requires Cloudflare credentials with access to the MCC account and
+the mcc-signups D1 database. This script prints aggregate counts and recent
+RSVP rows; it does not select request IPs, user agents, or referrers.
+USAGE
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --local)
+      mode="local"
+      config="wrangler.local.jsonc"
+      ;;
+    --remote)
+      mode="remote"
+      config="wrangler.jsonc"
+      ;;
+    --database)
+      shift
+      if [ "$#" -eq 0 ]; then
+        echo "--database requires a D1 database name" >&2
+        exit 64
+      fi
+      database="$1"
+      ;;
+    --config)
+      shift
+      if [ "$#" -eq 0 ]; then
+        echo "--config requires a path" >&2
+        exit 64
+      fi
+      config="$1"
+      ;;
+    --persist-to)
+      shift
+      if [ "$#" -eq 0 ]; then
+        echo "--persist-to requires a path" >&2
+        exit 64
+      fi
+      persist_to="$1"
+      ;;
+    --limit)
+      shift
+      if [ "$#" -eq 0 ]; then
+        echo "--limit requires a number" >&2
+        exit 64
+      fi
+      limit="$1"
+      ;;
+    --json)
+      format="json"
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "unknown option: $1" >&2
+      usage >&2
+      exit 64
+      ;;
+  esac
+  shift
+done
+
+case "$limit" in
+  ''|*[!0-9]*)
+    echo "--limit must be a non-negative integer" >&2
+    exit 64
+    ;;
+esac
+
+repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$repo_root"
+
+for command in wrangler jq column; do
+  if ! command -v "$command" >/dev/null 2>&1; then
+    echo "$command not found. Run inside nix develop or install it." >&2
+    exit 69
+  fi
+done
+
+if [ "$mode" = "remote" ] &&
+   [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ] &&
+   [ -n "${TF_VAR_cloudflare_account_id:-}" ]; then
+  export CLOUDFLARE_ACCOUNT_ID="$TF_VAR_cloudflare_account_id"
+fi
+
+if [ "$mode" = "remote" ] &&
+   [ -z "${CLOUDFLARE_API_TOKEN:-}" ] &&
+   [ -n "${TF_VAR_cloudflare_account_api_token:-}" ]; then
+  export CLOUDFLARE_API_TOKEN="$TF_VAR_cloudflare_account_api_token"
+fi
+
+d1_json() {
+  sql="$1"
+  persist_args=()
+  if [ -n "$persist_to" ]; then
+    persist_args=(--persist-to "$persist_to")
+  fi
+  if [ "$mode" = "local" ]; then
+    wrangler d1 execute "$database" \
+      --local \
+      --config "$config" \
+      "${persist_args[@]}" \
+      --command "$sql" \
+      --json
+  else
+    wrangler d1 execute "$database" \
+      --remote \
+      --config "$config" \
+      --command "$sql" \
+      --json
+  fi
+}
+
+rows_filter='
+  if type == "array" then
+    (.[0].results // .[0].result // [])
+  elif type == "object" then
+    (.result[0].results // .result.results // .results // [])
+  else
+    []
+  end
+'
+
+rsvps_sql="
+SELECT
+  e.slug,
+  e.title,
+  r.email,
+  r.name_handle,
+  r.status,
+  r.community_opt_in,
+  r.source,
+  r.created_at,
+  r.updated_at,
+  r.sync_status,
+  r.sync_error
+FROM event_rsvps r
+JOIN mcc_events e ON e.id = r.event_id
+ORDER BY r.updated_at DESC
+LIMIT $limit
+"
+
+counts_sql="
+SELECT
+  e.slug,
+  COUNT(*) AS rsvps,
+  SUM(CASE WHEN r.community_opt_in = 1 THEN 1 ELSE 0 END) AS community_requests
+FROM event_rsvps r
+JOIN mcc_events e ON e.id = r.event_id
+GROUP BY e.slug
+ORDER BY e.slug
+"
+
+rsvps_json="$(d1_json "$rsvps_sql")"
+
+if [ "$format" = "json" ]; then
+  jq "$rows_filter" <<<"$rsvps_json"
+  exit 0
+fi
+
+counts_json="$(d1_json "$counts_sql")"
+
+printf 'MCC D1 event RSVPs (%s: %s)\n' "$mode" "$database"
+printf 'Generated: %s\n\n' "$(date -Is)"
+
+printf 'By event:\n'
+jq -r "$rows_filter | ([\"EVENT\", \"RSVPS\", \"MICROPLATFORM_REQUESTS\"]), (.[] | [.slug, (.rsvps|tostring), (.community_requests|tostring)]) | @tsv" \
+  <<<"$counts_json" |
+  column -t -s $'\t'
+printf '\n'
+
+printf 'Recent RSVPs:\n'
+jq -r "$rows_filter | ([\"EMAIL\", \"NAME_HANDLE\", \"EVENT\", \"STATUS\", \"MICROPLATFORM\", \"SOURCE\", \"UPDATED\", \"SYNC\"]), (.[] | [.email, (.name_handle // \"\"), .slug, .status, (if .community_opt_in == 1 then \"yes\" else \"no\" end), .source, .updated_at, .sync_status]) | @tsv" \
+  <<<"$rsvps_json" |
+  column -t -s $'\t'
