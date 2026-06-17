@@ -6,4 +6,5 @@ mkdir -p dist
 
 cp index.html privacy.html terms.html session-01.html favicon.svg _redirects dist/
 cp -R assets dist/
+cp dist/index.html dist/home.html
 python3 scripts/render-source-notes
