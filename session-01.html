@@ -54,6 +54,8 @@
     body {
       margin: 0;
       min-height: 100vh;
+      max-width: 100%;
+      overflow-x: hidden;
       background:
         linear-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.14) 1px, transparent 1px),
@@ -70,13 +72,30 @@
     }
 
     main {
-      width: min(920px, 100%);
+      width: min(1480px, 100%);
       margin: 0 auto;
-      padding: 42px 28px;
+      padding: clamp(20px, 4vw, 42px);
+    }
+
+    .mobile-summary {
+      display: none;
+    }
+
+    .event-layout {
+      display: grid;
+      grid-template-columns: minmax(390px, 0.86fr) minmax(420px, 1fr);
+      gap: clamp(20px, 4vw, 36px);
+      align-items: stretch;
+      min-height: calc(100vh - 120px);
+      width: 100%;
+      max-width: 100%;
     }
 
     .rsvp-card {
       display: grid;
+      grid-template-rows: auto 1fr;
+      min-width: 0;
+      max-width: 100%;
       border: 1px solid var(--rule);
       background: var(--panel);
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.24);
@@ -84,8 +103,8 @@
 
     .card-head {
       display: grid;
-      gap: 14px;
-      padding: clamp(28px, 5vw, 46px);
+      gap: 18px;
+      padding: clamp(24px, 4vw, 38px);
       border-bottom: 1px solid var(--rule);
     }
 
@@ -103,24 +122,26 @@
     h1 {
       margin: 0;
       font-family: var(--font-display);
-      font-size: clamp(54px, 11vw, 112px);
+      font-size: clamp(54px, 8vw, 100px);
       font-weight: 900;
       font-synthesis-weight: none;
       line-height: 0.86;
       letter-spacing: 0;
       text-transform: uppercase;
+      overflow-wrap: break-word;
     }
 
     .card-body {
       display: grid;
-      gap: 28px;
-      padding: clamp(28px, 5vw, 46px);
+      gap: 24px;
+      padding: clamp(24px, 4vw, 38px);
       background: var(--panel-soft);
+      align-content: start;
     }
 
     form {
       display: grid;
-      gap: 24px;
+      gap: 20px;
     }
 
     .field {
@@ -132,7 +153,7 @@
     .field-label {
       color: var(--muted);
       font-family: var(--font-meta);
-      font-size: clamp(17px, 3vw, 26px);
+      font-size: clamp(16px, 2vw, 22px);
       line-height: 1.1;
       text-transform: uppercase;
     }
@@ -140,12 +161,12 @@
     input,
     button {
       width: 100%;
-      min-height: 66px;
+      min-height: 58px;
       border: 1px solid var(--rule);
       border-radius: 0;
       background: transparent;
       color: var(--ink);
-      font: 700 clamp(18px, 3vw, 28px)/1 var(--font-meta);
+      font: 700 clamp(17px, 2.2vw, 24px)/1 var(--font-meta);
       letter-spacing: 0;
       text-transform: uppercase;
     }
@@ -190,9 +211,10 @@
     .checkline span {
       color: var(--ink);
       font-family: var(--font-body);
-      font-size: clamp(20px, 3.6vw, 32px);
+      font-size: clamp(18px, 2.6vw, 26px);
       line-height: 1.22;
       text-transform: none;
+      overflow-wrap: anywhere;
     }
 
     .turnstile-shell {
@@ -215,7 +237,7 @@
 
     button {
       cursor: pointer;
-      min-height: 76px;
+      min-height: 68px;
       background: transparent;
       color: var(--ink);
     }
@@ -233,6 +255,7 @@
       font-family: var(--font-body);
       font-size: clamp(18px, 3vw, 28px);
       line-height: 1.3;
+      overflow-wrap: anywhere;
     }
 
     .form-status {
@@ -241,6 +264,79 @@
 
     .form-status[data-state="error"] {
       color: #ff6f6f;
+    }
+
+    .event-card {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-width: 0;
+      max-width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.88);
+      background: rgba(255, 255, 255, 0.07);
+      color: #ffffff;
+    }
+
+    .event-card-head,
+    .event-card-foot {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 24px 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.78);
+      color: #ffffff;
+      font-family: var(--font-meta);
+      font-size: clamp(16px, 1.6vw, 22px);
+      line-height: 1.15;
+      text-transform: uppercase;
+    }
+
+    .event-card-foot {
+      border-top: 1px solid rgba(255, 255, 255, 0.78);
+      border-bottom: 0;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: clamp(13px, 1.25vw, 18px);
+    }
+
+    .facts {
+      display: grid;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .facts li {
+      display: grid;
+      grid-template-columns: minmax(112px, 0.32fr) minmax(0, 1fr);
+      gap: clamp(16px, 3vw, 34px);
+      min-height: 96px;
+      padding: 22px 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.58);
+      align-items: start;
+    }
+
+    .facts li:last-child {
+      border-bottom: 0;
+    }
+
+    .facts b {
+      color: rgba(255, 255, 255, 0.82);
+      font-family: var(--font-meta);
+      font-size: clamp(14px, 1.35vw, 20px);
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .facts span {
+      color: #ffffff;
+      font-family: var(--font-body);
+      font-size: clamp(20px, 2.4vw, 34px);
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .facts span.url {
+      font-size: clamp(17px, 1.85vw, 25px);
     }
 
     .footer {
@@ -256,14 +352,85 @@
       text-transform: uppercase;
     }
 
+    @media (max-width: 920px) {
+      .mobile-summary {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.88);
+        padding: 18px;
+        color: #ffffff;
+        font-family: var(--font-meta);
+        font-size: clamp(18px, 5vw, 28px);
+        line-height: 1.15;
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+      }
+
+      .mobile-summary span:first-child {
+        color: rgba(255, 255, 255, 0.82);
+        font-size: clamp(13px, 3.8vw, 18px);
+      }
+
+      .event-layout {
+        display: block;
+        min-height: 0;
+      }
+
+      .rsvp-card {
+        width: 100%;
+      }
+
+      .event-card {
+        min-height: auto;
+        width: 100%;
+        margin-top: 18px;
+      }
+
+      .event-card-head,
+      .event-card-foot {
+        justify-content: start;
+      }
+    }
+
     @media (max-width: 620px) {
       main {
-        padding: 24px;
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: clamp(50px, 16vw, 64px);
       }
 
       .card-head,
       .card-body {
         padding: 24px;
+      }
+
+      .event-card-head,
+      .event-card-foot {
+        padding: 18px;
+      }
+
+      .facts li {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        min-height: 0;
+        padding: 18px;
+      }
+
+      .facts span {
+        font-size: clamp(21px, 7vw, 30px);
+      }
+
+      .facts span.url {
+        font-size: clamp(17px, 5.4vw, 22px);
+      }
+
+      .note,
+      .form-status {
+        font-size: 16px;
       }
 
       .checkline {
@@ -280,48 +447,78 @@
 </head>
 <body>
   <main>
-    <section class="rsvp-card" aria-labelledby="rsvp-title">
-      <header class="card-head">
-        <div class="meta-row">
-          <span>Marx Compute Club</span>
-          <span>June 25 / NYC</span>
-        </div>
-        <h1 id="rsvp-title">RSVP Signal.</h1>
-      </header>
-
-      <div class="card-body">
-        <form id="rsvp-form" action="/api/rsvp" method="post">
-          <div class="field">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" placeholder="email" autocomplete="email" required>
-          </div>
-
-          <div class="field">
-            <label for="name-handle">Name / handle</label>
-            <input id="name-handle" name="name_handle" type="text" placeholder="name / handle" autocomplete="name" maxlength="160">
-          </div>
-
-          <label class="checkline" for="community-opt-in">
-            <input id="community-opt-in" name="community_opt_in" type="checkbox" value="1">
-            <span>Also request an optional invitation to the MCC microplatform.</span>
-          </label>
-
-          <input class="hp" name="company" type="text" tabindex="-1" autocomplete="off">
-          <input name="event" type="hidden" value="first-session">
-          <input name="source" type="hidden" value="session-01">
-          <input id="turnstile-token" name="cf-turnstile-response" type="hidden">
-
-          <div class="turnstile-shell" id="turnstile-shell" hidden>
-            <div id="turnstile-widget"></div>
-          </div>
-
-          <button type="submit">RSVP</button>
-          <p class="form-status" id="rsvp-status" role="status" aria-live="polite"></p>
-        </form>
-
-        <p class="note">RSVP helps size the room and route venue updates. It is not a gate.</p>
-      </div>
+    <section class="mobile-summary" aria-label="Event summary">
+      <span>First session / NYC</span>
+      <span>Thursday, June 25</span>
+      <span>7-9 PM</span>
+      <span>The Living Gallery</span>
     </section>
+
+    <div class="event-layout">
+      <section class="rsvp-card" aria-labelledby="rsvp-title">
+        <header class="card-head">
+          <div class="meta-row">
+            <span>Marx Compute Club</span>
+            <span>June 25 / NYC</span>
+          </div>
+          <h1 id="rsvp-title">RSVP<br>Signal.</h1>
+        </header>
+
+        <div class="card-body">
+          <form id="rsvp-form" action="/api/rsvp" method="post">
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="email" autocomplete="email" required>
+            </div>
+
+            <div class="field">
+              <label for="name-handle">Name / handle</label>
+              <input id="name-handle" name="name_handle" type="text" placeholder="name / handle" autocomplete="name" maxlength="160">
+            </div>
+
+            <label class="checkline" for="community-opt-in">
+              <input id="community-opt-in" name="community_opt_in" type="checkbox" value="1">
+              <span>Also request an optional invitation to the MCC microplatform.</span>
+            </label>
+
+            <input class="hp" name="company" type="text" tabindex="-1" autocomplete="off">
+            <input name="event" type="hidden" value="first-session">
+            <input name="source" type="hidden" value="session-01">
+            <input id="turnstile-token" name="cf-turnstile-response" type="hidden">
+
+            <div class="turnstile-shell" id="turnstile-shell" hidden>
+              <div id="turnstile-widget"></div>
+            </div>
+
+            <button type="submit">RSVP</button>
+            <p class="form-status" id="rsvp-status" role="status" aria-live="polite"></p>
+          </form>
+
+          <p class="note">RSVP routes venue updates. It is not a gate.</p>
+        </div>
+      </section>
+
+      <aside class="event-card" aria-label="Event facts">
+        <div class="event-card-head">
+          <span>Event facts</span>
+          <span>RSVP</span>
+        </div>
+        <ul class="facts">
+          <li><b>Date</b><span>Thursday, June 25, 2026</span></li>
+          <li><b>Lecture</b><span>7-9 PM</span></li>
+          <li><b>Venue</b><span>The Living Gallery<br>1094 Broadway, Brooklyn</span></li>
+          <li><b>Event</b><span>Free</span></li>
+          <li><b>Stream</b><span class="url">stream.marxcompute.club</span></li>
+          <li><b>Recording</b><span>Available after</span></li>
+          <li><b>Supplies</b><span>BYOB; limited drink supplies</span></li>
+          <li><b>After</b><span>10 PM USA v Türkiye World Cup stream</span></li>
+        </ul>
+        <div class="event-card-foot">
+          <span>marxcompute.club</span>
+          <span>M-C-M' / M-C-C</span>
+        </div>
+      </aside>
+    </div>
 
     <footer class="footer">
       <span><a href="index.html">marxcompute.club</a></span>
