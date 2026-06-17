@@ -352,6 +352,113 @@
       text-transform: uppercase;
     }
 
+    @media (min-width: 921px) {
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      main {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto;
+        gap: 12px;
+        height: 100dvh;
+        padding: clamp(16px, 2.8vw, 30px);
+      }
+
+      .event-layout {
+        min-height: 0;
+        height: 100%;
+      }
+
+      .rsvp-card,
+      .event-card {
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .card-head {
+        padding: clamp(18px, 2.4vw, 30px);
+      }
+
+      h1 {
+        font-size: clamp(64px, 7vw, 92px);
+      }
+
+      .card-body {
+        gap: clamp(14px, 1.5vh, 20px);
+        padding: clamp(18px, 2.4vw, 30px);
+      }
+
+      form {
+        gap: clamp(12px, 1.45vh, 18px);
+      }
+
+      label,
+      .field-label {
+        font-size: clamp(14px, 1.45vw, 19px);
+      }
+
+      input,
+      button {
+        min-height: clamp(48px, 5.6vh, 58px);
+        font-size: clamp(16px, 1.65vw, 22px);
+      }
+
+      .checkline {
+        gap: 16px;
+        padding: clamp(14px, 1.7vh, 18px);
+      }
+
+      .checkline input {
+        width: clamp(38px, 4.5vh, 48px);
+        height: clamp(38px, 4.5vh, 48px);
+      }
+
+      .checkline span {
+        font-size: clamp(16px, 1.85vw, 22px);
+      }
+
+      button {
+        min-height: clamp(52px, 6vh, 62px);
+      }
+
+      .note,
+      .form-status {
+        font-size: clamp(14px, 1.45vw, 18px);
+      }
+
+      .event-card-head,
+      .event-card-foot {
+        padding: clamp(12px, 1.55vh, 18px) 28px;
+        font-size: clamp(14px, 1.35vw, 19px);
+      }
+
+      .facts {
+        grid-template-rows: repeat(8, minmax(0, 1fr));
+        min-height: 0;
+      }
+
+      .facts li {
+        min-height: 0;
+        padding: clamp(9px, 1.2vh, 16px) 28px;
+        align-items: center;
+      }
+
+      .facts b {
+        font-size: clamp(12px, 1.05vw, 16px);
+      }
+
+      .facts span {
+        font-size: clamp(18px, 2vw, 28px);
+      }
+
+      .facts span.url {
+        font-size: clamp(15px, 1.55vw, 21px);
+      }
+    }
+
     @media (max-width: 920px) {
       .mobile-summary {
         display: grid;
