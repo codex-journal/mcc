@@ -1,5 +1,19 @@
 MCC session 01 is posted.
 
+Scope: developing a historiography of American technical capital.
+
+We have to work through the technical character of capital in order to define
+its conditions of reproduction. The problem is not how capital can be seized in
+abstraction, but how it can be reproduced from without.
+
+That task is usually waived away. For this first session, we will take
+inventory of the categories we have inherited and mark where new ones have to be
+invented.
+
+The entrypoint for forking capital is software. Software is the liaison between
+superstructure and base. But that does not mean becoming hackers without
+history.
+
 Thursday, June 25, 2026
 7-9 PM
 The Living Gallery
@@ -18,8 +32,8 @@ Productive subsumption.
 Source engineering.
 Dependency revelation.
 
-RSVP helps size the room and route venue updates. It is not a gate. The RSVP
-form also lets you request an optional invitation to the MCC microplatform.
+RSVP helps size the room and route venue updates. It is not a gate. Platform
+access is handled separately.
 
 Recording will be available after.
 
