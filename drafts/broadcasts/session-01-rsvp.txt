@@ -1,5 +1,14 @@
 MCC session 01 is posted.
 
+Thursday, June 25, 2026
+7-9 PM
+The Living Gallery
+1094 Broadway, Brooklyn
+Free
+
+RSVP:
+https://www.marxcompute.club/session-01
+
 Scope: developing a historiography of American technical capital.
 
 We have to work through the technical character of capital in order to define
@@ -14,15 +23,6 @@ invented.
 The entrypoint for forking capital is software. Software is the liaison between
 superstructure and base. But that does not mean becoming 'hackers' without
 history.
-
-Thursday, June 25, 2026
-7-9 PM
-The Living Gallery
-1094 Broadway, Brooklyn
-Free
-
-RSVP:
-https://www.marxcompute.club/session-01
 
 Marx Compute Club is a build club for the infrastructure of theoretical
 production.
