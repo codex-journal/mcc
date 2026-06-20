@@ -12,6 +12,10 @@ https://stream.marxcompute.club/
 RSVP:
 https://www.marxcompute.club/session-01
 
+If you are receiving this, you are already on the MCC list and counted for
+session 01. RSVP helps size the room and route venue updates. It is not a gate.
+Platform access is handled separately.
+
 Scope: developing a historiography of American technical capital.
 
 We have to work through the technical character of capital in order to define
@@ -35,9 +39,6 @@ Theory / simulation / infrastructure.
 Productive subsumption.
 Source engineering.
 Dependency revelation.
-
-RSVP helps size the room and route venue updates. It is not a gate. Platform
-access is handled separately.
 
 Recording will be available after.
 
