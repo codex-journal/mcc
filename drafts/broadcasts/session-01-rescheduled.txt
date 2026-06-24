@@ -1,0 +1,58 @@
+MCC session 01 has moved.
+
+The first MCC session is no longer on Thursday, June 25. It has been moved to:
+
+Wednesday, July 15, 2026
+7-9 PM
+The Living Gallery
+1094 Broadway, Brooklyn
+Free
+
+Live stream:
+https://stream.marxcompute.club/
+
+RSVP / current details:
+https://www.marxcompute.club/session-01
+
+If you already RSVP'd, you are still counted. If the new date changes your
+availability, use the RSVP page again so the room count can be corrected.
+
+If you are receiving this, you are already on the MCC list and counted for
+session 01. RSVP helps size the room and route venue updates. It is not a gate.
+Platform access is handled separately.
+
+Scope: developing a historiography of American technical capital.
+
+We have to work through the technical character of capital in order to define
+its conditions of reproduction. We need to understand how capital can be
+reproduced from without, rather than claim that capital can be seized without
+such apprehension.
+
+That task is usually waived away. For this first session, we will take
+inventory of the categories we have inherited and mark where new ones have to be
+invented.
+
+The entrypoint for forking capital is software. Software is the liaison between
+superstructure and base. But that does not mean becoming 'hackers' without
+history.
+
+Marx Compute Club is a build club for the infrastructure of theoretical
+production.
+
+Theory / simulation / infrastructure.
+
+Productive subsumption.
+Source engineering.
+Dependency revelation.
+
+Recording will be available after.
+
+Privacy:
+https://www.marxcompute.club/privacy.html
+
+Terms:
+https://www.marxcompute.club/terms.html
+
+You are receiving this because you signed up for MCC updates at
+marxcompute.club. Reply here if you want to be removed from the announcement
+list.
