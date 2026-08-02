@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+"""Publish to Instagram via the Graph API (Instagram Business Login tokens).
+
+Token comes from IG_ACCESS_TOKEN, injected by the secret broker:
+
+    with-secret ig-codex scripts/ig-publish --image-url https://... --caption-file cap.txt
+    with-secret ig-mcc   scripts/ig-publish --story --image-url https://...
+
+Dry-run by default; --publish actually posts. Media must be reachable at a
+public URL (the API pulls, it does not accept uploads). The tracing rule makes
+this natural: cards ship inside site releases, so their public URLs exist
+before the post does.
+
+Feed single image, feed carousel (repeat --image-url), or story (--story,
+single image). Rate cap upstream is ~25 published posts/day per account.
+"""
+import argparse
+import json
+import os
+import sys
+import time
+import urllib.parse
+import urllib.request
+
+API = "https://graph.instagram.com"
+
+
+def call(method, path, params):
+    params = dict(params)
+    params["access_token"] = os.environ["IG_ACCESS_TOKEN"]
+    data = urllib.parse.urlencode(params)
+    if method == "GET":
+        req = urllib.request.Request(f"{API}{path}?{data}")
+    else:
+        req = urllib.request.Request(f"{API}{path}", data=data.encode(), method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            return json.load(resp)
+    except urllib.error.HTTPError as err:
+        body = err.read().decode(errors="replace")
+        raise SystemExit(f"API error {err.code} on {path}: {body}")
+
+
+def wait_finished(container_id):
+    for _ in range(30):
+        status = call("GET", f"/{container_id}", {"fields": "status_code,status"})
+        code = status.get("status_code")
+        if code == "FINISHED":
+            return
+        if code == "ERROR":
+            raise SystemExit(f"container {container_id} failed: {status}")
+        time.sleep(2)
+    raise SystemExit(f"container {container_id} not ready after 60s")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--image-url", action="append", required=True,
+                        help="public URL of the image; repeat for a carousel")
+    parser.add_argument("--caption", default=None)
+    parser.add_argument("--caption-file", default=None,
+                        help="read caption from a file (e.g. the packet POST.md excerpt)")
+    parser.add_argument("--story", action="store_true",
+                        help="publish as a story instead of a feed post")
+    parser.add_argument("--publish", action="store_true",
+                        help="actually publish; default is dry-run")
+    args = parser.parse_args()
+
+    if "IG_ACCESS_TOKEN" not in os.environ:
+        raise SystemExit("IG_ACCESS_TOKEN not set; run under with-secret <ig-account>")
+
+    caption = args.caption
+    if args.caption_file:
+        with open(args.caption_file, "r", encoding="utf-8") as handle:
+            caption = handle.read().strip()
+    if args.story and caption:
+        raise SystemExit("stories do not carry captions; drop --caption/--caption-file")
+    if args.story and len(args.image_url) != 1:
+        raise SystemExit("stories publish one image at a time")
+
+    me = call("GET", "/me", {"fields": "username,user_id"})
+    user = me["user_id"]
+    kind = "story" if args.story else (
+        "carousel" if len(args.image_url) > 1 else "feed image")
+
+    print(f"account: @{me['username']}  target: {kind}  images: {len(args.image_url)}")
+    for url in args.image_url:
+        print(f"  image: {url}")
+    if caption:
+        print(f"  caption ({len(caption)} chars): {caption[:120]}"
+              + ("…" if len(caption) > 120 else ""))
+    if not args.publish:
+        print("dry-run: nothing published (pass --publish to post)")
+        return
+
+    if args.story:
+        container = call("POST", f"/{user}/media", {
+            "media_type": "STORIES", "image_url": args.image_url[0]})
+    elif len(args.image_url) > 1:
+        children = []
+        for url in args.image_url:
+            child = call("POST", f"/{user}/media", {
+                "image_url": url, "is_carousel_item": "true"})
+            wait_finished(child["id"])
+            children.append(child["id"])
+        params = {"media_type": "CAROUSEL", "children": ",".join(children)}
+        if caption:
+            params["caption"] = caption
+        container = call("POST", f"/{user}/media", params)
+    else:
+        params = {"image_url": args.image_url[0]}
+        if caption:
+            params["caption"] = caption
+        container = call("POST", f"/{user}/media", params)
+
+    wait_finished(container["id"])
+    published = call("POST", f"/{user}/media_publish", {"creation_id": container["id"]})
+    permalink = call("GET", f"/{published['id']}", {"fields": "permalink"})
+    print(f"published: {published['id']}  {permalink.get('permalink', '(story: no permalink)')}")
+
+
+if __name__ == "__main__":
+    main()
